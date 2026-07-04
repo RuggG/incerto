@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Incerto, Simulated</title>
-<meta name="description" content="Nassim Taleb's Incerto — Fooled by Randomness, The Black Swan, Antifragile, and Skin in the Game — explained through fourteen live, manipulable Monte Carlo simulations running in your browser.">
+<meta name="description" content="Nassim Taleb's Incerto — all five books, from Fooled by Randomness to Skin in the Game — explained through fifteen live, manipulable Monte Carlo simulations running in your browser.">
 <meta property="og:title" content="The Incerto, Simulated">
-<meta property="og:description" content="Taleb's core ideas as live simulations: coin-flip fund managers, Russian roulette, the turkey, Extremistan, the blowup artist, the barbell, who pays, and the minority rule. Pull the levers yourself.">
+<meta property="og:description" content="Taleb's core ideas as live simulations: coin-flip fund managers, Russian roulette, the turkey, Extremistan, the blowup artist, the barbell, who pays, the minority rule, and the bed of Procrustes. Pull the levers yourself.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ruggg.github.io/incerto/">
 <meta property="og:image" content="https://ruggg.github.io/incerto/og-image.png">
@@ -221,6 +221,16 @@
   .seg button.on { background: var(--amber); color: #17130A; font-weight: 700; }
   .seg button:focus-visible { outline: 2px solid var(--amber); outline-offset: -2px; }
   .sim.mini { max-width: 48rem; }
+  .panel-aph {
+    padding: 1.1rem 1.6rem; border-top: 1px solid var(--panel-line);
+    font-family: var(--serif-display); font-style: italic; font-size: 1.08rem;
+    line-height: 1.5; color: #D9DCE4; text-align: center;
+  }
+  .panel-aph .attr {
+    display: block; margin-top: 0.5rem;
+    font-family: var(--mono); font-style: normal; font-size: 0.64rem;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--panel-muted);
+  }
   .choice-row {
     display: flex; flex-wrap: wrap; gap: 0.5rem;
     padding: 0.8rem 1.2rem; border-top: 1px solid var(--panel-line);
@@ -678,7 +688,7 @@
           <div class="stat"><span class="k">Average wealth (both)</span><span class="v" id="s9-avg">–</span></div>
         </div>
         <div class="sim-ticker" role="status" id="s9-ticker"></div>
-        <div class="sim-take"><strong>The lesson.</strong> When actors bear their own tails, ruin is informative: the reckless remove themselves, the prudent inherit the capital, and the system grows calmer decade by decade without anyone regulating anything — the restaurant business is antifragile precisely because individual restaurants, and their owners, are fragile. Transfer the losses and you get the mirror image: nobody exits, blowups never slow, and — the quiet scandal — the gamblers end up owning the place, because every rescue is financed by taxing the careful. Nothing here is rigged: both societies contain identical people with identical luck, and their average returns are identical <em>by construction</em> — any single run's averages wobble, but the expectation is the same; the rules only change who ends up holding the wealth, and how often the ground shakes. Honesty requires the fine print too: the skin society's price is visible and personal — its ruined risk-takers include a few careful citizens who were simply unlucky, and the green line's median doesn't exclude them — while the bailout society's price is invisible and universal. And slide the severity down for the subtlest finding: when losses stop being fatal, the ruin dynamic vanishes — nobody exits, both societies shake alike, the system never learns — but the quiet tax on the careful never stops. Ruin was the teacher; the transfer is just the theft.</div>
+        <div class="sim-take"><strong>The lesson.</strong> When actors bear their own tails, ruin is informative: the reckless remove themselves, the prudent inherit the capital, and the system calms decade by decade with nobody in charge — the restaurant business is antifragile precisely because individual restaurants, and their owners, are fragile. Transfer the losses and nobody exits, blowups never slow, and the gamblers end up owning the place, since every rescue is billed to the careful. Nothing is rigged: identical people, identical luck, identical average returns by construction (single runs wobble; the expectation doesn't) — and the fine print cuts both ways: the skin society's ruins include a few unlucky careful citizens, counted in the green line rather than hidden from it. Slide the severity down and the ruin dynamic vanishes while the quiet tax remains. Ruin was the teacher; the transfer is just the theft.</div>
       </div>
     </div>
 
@@ -706,7 +716,7 @@
           <div class="stat"><span class="k">The market, two levels up</span><span class="v amber" id="sx5-mkt">–</span></div>
         </div>
         <div class="sim-ticker" role="status" id="sx5-ticker"></div>
-        <div class="sim-take"><strong>The lesson.</strong> The asymmetry does all the work: the stubborn few won't eat anything but X, the flexible majority doesn't care — so serving X satisfies everyone, and X wins at every scale where accommodation is cheap. This is why a huge share of packaged drinks are kosher-certified while almost none of their buyers are kosher, why one allergic child makes a whole flight peanut-free, and — Taleb argues — how languages, taboos, and moral norms actually spread. Two caveats he insists on: the rule needs cheap accommodation (make X expensive and it breaks), and it cuts both ways — a society inherits its tolerances <em>and</em> its intolerances from its most stubborn members. The deep Incerto point: a market's behavior is not the average of its members' preferences. Even here, at the end, the mean tells you nothing.</div>
+        <div class="sim-take"><strong>The lesson.</strong> The asymmetry does all the work: the stubborn few will only eat X, the flexible majority doesn't care — so X satisfies everyone, and wins at every scale where accommodation is cheap. It's why a huge share of packaged drinks are kosher-certified though almost no buyers are kosher, why one allergic child makes a whole flight peanut-free, and — Taleb argues — how languages, taboos, and morals spread. Two caveats: the rule needs accommodation to stay cheap, and it cuts both ways — societies inherit tolerances and intolerances alike from their most stubborn members. A market's behavior is not the average of its members' preferences. Even here, at the end, the mean tells you nothing.</div>
       </div>
     </div>
 
@@ -723,7 +733,7 @@
     <div class="sim mini" id="simx4">
       <div class="sim-panel">
         <div class="sim-head">
-          <span class="sim-no">Postscript</span>
+          <span class="sim-no">Postscript I</span>
           <h3 class="sim-title">The Lindy effect</h3>
           <span class="sim-book">Antifragile, ch. 20</span>
         </div>
@@ -741,8 +751,36 @@
     </div>
 
     <div class="col">
+      <p class="fine">One book remains, and it refuses the premise of this page. So it gets the only machine here that argues against machines — and then the last word, in its own medium.</p>
+    </div>
+
+    <div class="sim mini" id="simx6">
+      <div class="sim-panel">
+        <div class="sim-head">
+          <span class="sim-no">Postscript II</span>
+          <h3 class="sim-title">The bed of Procrustes</h3>
+          <span class="sim-book">The Bed of Procrustes, 2010</span>
+        </div>
+        <div class="sim-canvas-wrap"><canvas id="cx6" aria-label="A histogram of fat-tailed daily returns with a fitted Gaussian curve drawn over it as a bed; real observations beyond the bed's edges are highlighted red as amputated by the model."></canvas></div>
+        <div class="sim-deck">
+          <button class="btn" id="sx6-run">New data, same bed</button>
+          <button class="btn primary" id="sx6-deal">Deal an aphorism</button>
+        </div>
+        <div class="sim-stats">
+          <div class="stat"><span class="k">Beyond the bedposts — the bed</span><span class="v">0.27% of days</span></div>
+          <div class="stat"><span class="k">Beyond — the data</span><span class="v amber" id="sx6-data">–</span></div>
+          <div class="stat"><span class="k">Underestimated by</span><span class="v red" id="sx6-ratio">–</span></div>
+          <div class="stat"><span class="k">Worst day in sample</span><span class="v" id="sx6-worst">–</span></div>
+        </div>
+        <div class="sim-ticker" role="status" id="sx6-ticker"></div>
+        <div class="panel-aph" id="sx6-aph" hidden></div>
+        <div class="sim-take"><strong>The lesson.</strong> Procrustes fitted travelers to his bed by stretching them or cutting off their legs. Taleb's charge is that modern knowledge works the same way: we don't fit models to the world, we amputate the world to fit our models — and the Gaussian above is the bed itself, a perfect fit through the comfortable middle, with every inconvenient day beyond the posts declared impossible rather than important. The cut-off part doesn't disappear; it waits (you met it in Volume II). Which is why this book contains no models at all — only aphorisms, judgments compressed past the reach of any bed. Every volume on this page closes with one; the habit was borrowed from here. Deal a few.</div>
+      </div>
+    </div>
+
+    <div class="col">
       <p class="fine">Every number on this page was generated in your browser while you read — seeded Monte Carlo, no data, no server (with one exception: your own trigger pulls in Sim 02 are unseeded and unrepeatable, which seems only fair). Press the re-run buttons: the specifics will come out different, because that is the entire point. If the lessons come out different too, that would be the most Talebian result of all.</p>
-      <p class="fine">The books, in reading order: <em>Fooled by Randomness</em> (2001) · <em>The Black Swan</em> (2007) · <em>Antifragile</em> (2012) · <em>Skin in the Game</em> (2018) — with <em>The Bed of Procrustes</em> (2010), the aphorisms, completing the Incerto; those resist simulation on purpose. This page is a homage and a toy, not a substitute: the books contain the parts that cannot be simulated.</p>
+      <p class="fine">The books, in reading order: <em>Fooled by Randomness</em> (2001) · <em>The Black Swan</em> (2007) · <em>The Bed of Procrustes</em> (2010) · <em>Antifragile</em> (2012) · <em>Skin in the Game</em> (2018). All five are on this page now — one of them, fittingly, mostly in its own words. This page is a homage and a toy, not a substitute: the books contain the parts that cannot be simulated.</p>
     </div>
   </div>
 
@@ -2862,6 +2900,119 @@ function binom(rng, n, p) {
   bindRange('sx5-p', 'sx5-p-out', v => fmt(v, 1) + '%', v => { p = v / 100; simulate(); cv.redraw(); });
   bindRange('sx5-k', 'sx5-k-out', v => v, v => { k = v; simulate(); cv.redraw(); });
   document.getElementById('sx5-run').addEventListener('click', () => { seed++; simulate(); cv.redraw(); });
+  simulate();
+  cv.redraw();
+})();
+
+/* ================= POSTSCRIPT II: the bed of procrustes ================= */
+(function simBed() {
+  const canvas = document.getElementById('cx6');
+  const NDATA = 2500;
+  let seed = 4242, data = [], mu = 0, sd = 1;
+  const APHORISMS = [
+    'The stock market, in brief: participants are calmly waiting in line to be slaughtered while thinking it is for a Broadway show.',
+    'An erudite is someone who displays less than he knows; a journalist or consultant, the opposite.',
+    'The three most harmful addictions are heroin, carbohydrates, and a monthly salary.',
+    'Education makes the wise slightly wiser, but it makes the fool vastly more dangerous.',
+    'The best revenge on a liar is to convince him that you believe what he said.',
+    'You are rich if and only if money you refuse tastes better than money you accept.',
+    'The opposite of success isn’t failure; it is name-dropping.',
+    'In science you need to understand the world; in business you need others to misunderstand it.',
+  ];
+  let order = null, ai = 0;
+
+  function t3(rng) {
+    const a = randn(rng), b = randn(rng), c = randn(rng), d = randn(rng);
+    return a / Math.sqrt((b * b + c * c + d * d) / 3);
+  }
+
+  function simulate() {
+    const rng = mulberry32(seed);
+    data = [];
+    for (let i = 0; i < NDATA; i++) data.push((0.01 / Math.sqrt(3)) * t3(rng));
+    mu = data.reduce((a, b) => a + b) / NDATA;
+    sd = Math.sqrt(data.reduce((a, b) => a + (b - mu) * (b - mu), 0) / (NDATA - 1));
+    updateStats();
+  }
+
+  function updateStats() {
+    const beyond = data.filter(x => Math.abs(x - mu) > 3 * sd).length;
+    const dataP = beyond / NDATA;
+    document.getElementById('sx6-data').textContent = fmt(dataP * 100, 2) + '% (' + beyond + ' of 2,500)';
+    document.getElementById('sx6-ratio').textContent = '×' + fmt(dataP / 0.0027, 1);
+    let mz = 0;
+    for (const x of data) mz = Math.max(mz, Math.abs(x - mu) / sd);
+    const log10odds = (mz * mz / 2 + Math.log(mz * 1.2533)) / Math.LN10;
+    document.getElementById('sx6-worst').textContent = fmt(mz, 1) + 'σ — bed odds ≈ 1 in 10^' + fmt(Math.round(log10odds));
+    document.getElementById('sx6-ticker').innerHTML =
+      'The bed fits beautifully through the middle — and the middle is most nights. Beyond the bedposts it calls <b>' + beyond + ' real days</b> in this sample essentially impossible. They were not disproven. They were <span class="r">amputated</span>.';
+  }
+
+  const cv = makeCanvas(canvas, w => Math.max(220, Math.min(280, w * 0.36)), draw);
+  function draw(ctx, w, h) {
+    ctx.fillStyle = '#14161C'; ctx.fillRect(0, 0, w, h);
+    if (!data.length) return;
+    const padL = 16, padR = 16, padT = 26, padB = 30;
+    const cw = w - padL - padR, ch = h - padT - padB;
+    const BINS = 81, lo = mu - 8 * sd, hi = mu + 8 * sd, bw = (hi - lo) / BINS;
+    const counts = new Array(BINS).fill(0);
+    for (const x of data) {
+      let b = Math.floor((x - lo) / bw);
+      b = Math.max(0, Math.min(BINS - 1, b));
+      counts[b]++;
+    }
+    const yMax = Math.log1p(Math.max(...counts)) * 1.08;
+    const X = v => padL + (v - lo) / (hi - lo) * cw;
+    const Yc = c => padT + (1 - Math.log1p(c) / yMax) * ch;
+    // bars
+    for (let b = 0; b < BINS; b++) {
+      if (!counts[b]) continue;
+      const cx0 = padL + b / BINS * cw;
+      const center = lo + (b + 0.5) * bw;
+      ctx.fillStyle = Math.abs(center - mu) > 3 * sd ? '#E4523F' : 'rgba(126,133,152,0.55)';
+      ctx.fillRect(cx0 + 0.5, Yc(counts[b]), cw / BINS - 1, padT + ch - Yc(counts[b]));
+    }
+    // the fitted gaussian bed
+    ctx.strokeStyle = '#F0B24A'; ctx.lineWidth = 1.8; ctx.setLineDash([5, 3]);
+    ctx.beginPath();
+    for (let px = 0; px <= cw; px += 2) {
+      const v = lo + px / cw * (hi - lo);
+      const e = NDATA * bw * Math.exp(-(v - mu) * (v - mu) / (2 * sd * sd)) / (sd * 2.5066);
+      const y = Yc(e);
+      if (px === 0) ctx.moveTo(padL, y); else ctx.lineTo(padL + px, y);
+    }
+    ctx.stroke(); ctx.setLineDash([]);
+    // bedposts
+    ctx.strokeStyle = 'rgba(228,82,63,0.8)';
+    ctx.setLineDash([2, 3]);
+    [mu - 3 * sd, mu + 3 * sd].forEach(v => {
+      ctx.beginPath(); ctx.moveTo(X(v), padT); ctx.lineTo(X(v), padT + ch); ctx.stroke();
+    });
+    ctx.setLineDash([]);
+    ctx.font = '9px ' + MONO; ctx.fillStyle = '#E4523F'; ctx.textAlign = 'center';
+    ctx.fillText('−3σ', X(mu - 3 * sd), padT - 4);
+    ctx.fillText('+3σ — THE BED ENDS HERE', Math.min(X(mu + 3 * sd) + 40, w - 80), padT - 4);
+    // axis
+    ctx.fillStyle = '#7E8598';
+    [-6, -3, 0, 3, 6].forEach(s => ctx.fillText(s + 'σ', X(mu + s * sd), h - 8));
+    ctx.textAlign = 'left';
+    ctx.fillText(w < 620 ? 'REALITY (BARS, LOG) vs THE FITTED BED (AMBER)' : 'REALITY (BARS, LOG COUNT) vs THE FITTED GAUSSIAN BED (AMBER, DASHED)', padL, 12);
+  }
+
+  document.getElementById('sx6-run').addEventListener('click', () => { seed++; simulate(); cv.redraw(); });
+  const aphEl = document.getElementById('sx6-aph');
+  document.getElementById('sx6-deal').addEventListener('click', () => {
+    if (!order) {
+      order = APHORISMS.map((_, i) => i);
+      for (let i = order.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = order[i]; order[i] = order[j]; order[j] = tmp;
+      }
+    }
+    aphEl.hidden = false;
+    aphEl.innerHTML = '“' + APHORISMS[order[ai % order.length]] + '”<span class="attr">The Bed of Procrustes</span>';
+    ai++;
+  });
   simulate();
   cv.redraw();
 })();
