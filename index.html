@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Incerto, Simulated</title>
-<meta name="description" content="Nassim Taleb's Incerto — Fooled by Randomness, The Black Swan, and Antifragile — explained through twelve live, manipulable Monte Carlo simulations running in your browser.">
+<meta name="description" content="Nassim Taleb's Incerto — Fooled by Randomness, The Black Swan, and Antifragile — explained through thirteen live, manipulable Monte Carlo simulations running in your browser.">
 <meta property="og:title" content="The Incerto, Simulated">
-<meta property="og:description" content="Taleb's core ideas as live simulations: coin-flip fund managers, Russian roulette, the turkey, Extremistan, the blowup artist, and the barbell. Pull the levers yourself.">
+<meta property="og:description" content="Taleb's core ideas as live simulations: coin-flip fund managers, Russian roulette, the turkey, Extremistan, the blowup artist, the barbell, and the minority rule. Pull the levers yourself.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ruggg.github.io/incerto/">
 <meta property="og:image" content="https://ruggg.github.io/incerto/og-image.png">
@@ -655,7 +655,7 @@
     <div class="sim mini" id="simx4">
       <div class="sim-panel">
         <div class="sim-head">
-          <span class="sim-no">Postscript</span>
+          <span class="sim-no">Postscript I</span>
           <h3 class="sim-title">The Lindy effect</h3>
           <span class="sim-book">Antifragile, ch. 20</span>
         </div>
@@ -669,6 +669,34 @@
         </div>
         <div class="sim-ticker" role="status" id="sx4-ticker"></div>
         <div class="sim-take"><strong>The lesson.</strong> Perishables age toward death; the non-perishable — books, ideas, technologies — age <em>away</em> from it: every year survived is evidence of robustness, so expected remaining life grows with age. <em>Fooled by Randomness</em> is twenty-five years old this year. Lindy says: plan on it outliving most things published this morning.</div>
+      </div>
+    </div>
+
+    <div class="col">
+      <p class="fine">The Incerto kept growing after 2012, and its final volume contains the strangest result of all — how a tiny, stubborn minority ends up deciding what everyone eats, says, and believes. One last machine:</p>
+    </div>
+
+    <div class="sim mini" id="simx5">
+      <div class="sim-panel">
+        <div class="sim-head">
+          <span class="sim-no">Postscript II</span>
+          <h3 class="sim-title">The minority rule</h3>
+          <span class="sim-book">Skin in the Game, 2018</span>
+        </div>
+        <div class="sim-canvas-wrap"><canvas id="cx5" aria-label="A grid of dinner tables where a single stubborn guest forces the whole table to serve X, then a cascade showing tables forcing venues and venues forcing the entire market."></canvas></div>
+        <div class="sim-deck">
+          <div class="ctl"><label for="sx5-p">Intransigent minority</label><input type="range" id="sx5-p" min="0.5" max="10" step="0.5" value="4"><output id="sx5-p-out">4.0%</output></div>
+          <div class="ctl"><label for="sx5-k">Guests per table</label><input type="range" id="sx5-k" min="4" max="32" step="2" value="12"><output id="sx5-k-out">12</output></div>
+          <button class="btn" id="sx5-run">Reseat everyone</button>
+        </div>
+        <div class="sim-stats">
+          <div class="stat"><span class="k">Tables forced to X — theory</span><span class="v" id="sx5-q1a">–</span></div>
+          <div class="stat"><span class="k">Tables forced — these 96</span><span class="v amber" id="sx5-q1s">–</span></div>
+          <div class="stat"><span class="k">Venues, one level up</span><span class="v" id="sx5-q2">–</span></div>
+          <div class="stat"><span class="k">The market, two levels up</span><span class="v amber" id="sx5-mkt">–</span></div>
+        </div>
+        <div class="sim-ticker" role="status" id="sx5-ticker"></div>
+        <div class="sim-take"><strong>The lesson.</strong> The asymmetry does all the work: the stubborn few won't eat anything but X, the flexible majority doesn't care — so serving X satisfies everyone, and X wins at every scale where accommodation is cheap. This is why a huge share of packaged drinks are kosher-certified while almost none of their buyers are kosher, why one allergic child makes a whole flight peanut-free, and — Taleb argues — how languages, taboos, and moral norms actually spread. Two caveats he insists on: the rule needs cheap accommodation (make X expensive and it breaks), and it cuts both ways — a society inherits its tolerances <em>and</em> its intolerances from its most stubborn members. The deep Incerto point: a market's behavior is not the average of its members' preferences. Even here, at the end, the mean tells you nothing.</div>
       </div>
     </div>
 
@@ -2519,6 +2547,108 @@ function binom(rng, n, p) {
 
   bindRange('sx4-age', 'sx4-age-out', v => v + ' yrs', v => { age = v; updateStats(); cv.redraw(); });
   updateStats();
+})();
+
+/* ================= POSTSCRIPT II: the minority rule ================= */
+(function simMinority() {
+  const canvas = document.getElementById('cx5');
+  const G = 96;
+  let p = 0.04, k = 12, seed = 640;
+  let tables = [];
+
+  function simulate() {
+    const rng = mulberry32(seed);
+    tables = [];
+    for (let t = 0; t < G; t++) {
+      const guests = [];
+      for (let i = 0; i < k; i++) guests.push(rng() < p);
+      tables.push(guests);
+    }
+    updateStats();
+  }
+
+  function ladder() {
+    const q1 = 1 - Math.pow(1 - p, k);
+    const q2 = 1 - Math.pow(1 - q1, 8);
+    const q3 = 1 - Math.pow(1 - q2, 8);
+    return { q1, q2, q3 };
+  }
+
+  function pct(v, d) { return fmt(v * 100, d === undefined ? 1 : d) + '%'; }
+
+  function updateStats() {
+    const { q1, q2, q3 } = ladder();
+    const forced = tables.filter(g => g.some(Boolean)).length;
+    document.getElementById('sx5-q1a').textContent = pct(q1);
+    document.getElementById('sx5-q1s').textContent = fmt(forced) + ' / 96 (' + fmt(forced / G * 100, 0) + '%)';
+    document.getElementById('sx5-q2').textContent = pct(q2);
+    document.getElementById('sx5-mkt').textContent = q3 > 0.995 ? '~100%' : pct(q3);
+    document.getElementById('sx5-ticker').innerHTML =
+      '<b>' + fmt(p * 100, 1) + '%</b> of individuals → ' + pct(q1, 0) + ' of tables → ' + pct(q2, 0) + ' of venues → <b>' + (q3 > 0.995 ? '~100%' : pct(q3, 0)) + ' of the market</b>. Nobody in the majority ever expressed a preference. (Stylized scales: ' + k + ' guests per table, 8 tables per venue, 8 venues per market.)';
+  }
+
+  function layout(w) {
+    const cols = w < 560 ? 8 : 12;
+    const rows = Math.ceil(G / cols);
+    const gap = 4;
+    const cellW = Math.floor((w - 28 - (cols - 1) * gap) / cols);
+    const cellH = Math.min(cellW, 30);
+    const gridTop = 24;
+    const ladderTop = gridTop + rows * (cellH + gap) + 16;
+    return { cols, rows, gap, cellW, cellH, gridTop, ladderTop, height: ladderTop + 4 * 15 + 10 };
+  }
+
+  const cv = makeCanvas(canvas, w => layout(w).height, draw);
+  function draw(ctx, w, h) {
+    ctx.fillStyle = '#14161C'; ctx.fillRect(0, 0, w, h);
+    if (!tables.length) return;
+    const L = layout(w);
+    ctx.font = '9px ' + MONO; ctx.textAlign = 'left'; ctx.fillStyle = '#7E8598';
+    ctx.fillText(w < 560 ? 'AMBER TABLES: FORCED TO X BY ONE STUBBORN GUEST' : '96 DINNER TABLES — AMBER: ONE STUBBORN GUEST FORCED THE TABLE TO X', 14, L.gridTop - 8);
+    const dcols = Math.ceil(Math.sqrt(k));
+    const drows = Math.ceil(k / dcols);
+    for (let t = 0; t < G; t++) {
+      const cx0 = 14 + (t % L.cols) * (L.cellW + L.gap);
+      const cy0 = L.gridTop + Math.floor(t / L.cols) * (L.cellH + L.gap);
+      const forced = tables[t].some(Boolean);
+      if (forced) { ctx.fillStyle = 'rgba(240,178,74,0.12)'; ctx.fillRect(cx0, cy0, L.cellW, L.cellH); }
+      ctx.strokeStyle = forced ? 'rgba(240,178,74,0.8)' : '#2A2E3A';
+      ctx.strokeRect(cx0 + 0.5, cy0 + 0.5, L.cellW - 1, L.cellH - 1);
+      for (let i = 0; i < k; i++) {
+        const gx = cx0 + 3 + (i % dcols) / dcols * (L.cellW - 6);
+        const gy = cy0 + 3 + Math.floor(i / dcols) / drows * (L.cellH - 6);
+        ctx.fillStyle = tables[t][i] ? '#E4523F' : 'rgba(126,133,152,0.55)';
+        ctx.fillRect(gx, gy, 2.4, 2.4);
+      }
+    }
+    const { q1, q2, q3 } = ladder();
+    const forcedShare = tables.filter(g => g.some(Boolean)).length / G;
+    const bars = [['INDIVIDUALS', p], ['TABLES', q1], ['VENUES', q2], ['THE MARKET', q3]];
+    const lx = 110, lw = w - lx - 60;
+    ctx.textAlign = 'right';
+    bars.forEach(([name, q], i) => {
+      const y = L.ladderTop + i * 15;
+      ctx.fillStyle = '#7E8598'; ctx.font = '9px ' + MONO;
+      ctx.fillText(name, lx - 8, y + 8);
+      ctx.fillStyle = 'rgba(126,133,152,0.2)';
+      ctx.fillRect(lx, y, lw, 10);
+      ctx.fillStyle = i === 0 ? '#E4523F' : '#F0B24A';
+      ctx.fillRect(lx, y, Math.max(1.5, lw * q), 10);
+      if (i === 1) {
+        ctx.fillStyle = '#E8EAF0';
+        ctx.fillRect(lx + lw * forcedShare - 1, y - 2, 2, 14);
+      }
+      ctx.fillStyle = '#E8EAF0'; ctx.textAlign = 'left';
+      ctx.fillText((q * 100 > 99.5 && i > 0 ? '~100' : fmt(q * 100, q * 100 < 10 ? 1 : 0)) + '%', lx + lw + 6, y + 8);
+      ctx.textAlign = 'right';
+    });
+  }
+
+  bindRange('sx5-p', 'sx5-p-out', v => fmt(v, 1) + '%', v => { p = v / 100; simulate(); cv.redraw(); });
+  bindRange('sx5-k', 'sx5-k-out', v => v, v => { k = v; simulate(); cv.redraw(); });
+  document.getElementById('sx5-run').addEventListener('click', () => { seed++; simulate(); cv.redraw(); });
+  simulate();
+  cv.redraw();
 })();
 </script>
 </body>
