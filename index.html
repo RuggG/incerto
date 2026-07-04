@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Incerto, Simulated</title>
-<meta name="description" content="Nassim Taleb's Incerto — Fooled by Randomness, The Black Swan, and Antifragile — explained through thirteen live, manipulable Monte Carlo simulations running in your browser.">
+<meta name="description" content="Nassim Taleb's Incerto — Fooled by Randomness, The Black Swan, Antifragile, and Skin in the Game — explained through fourteen live, manipulable Monte Carlo simulations running in your browser.">
 <meta property="og:title" content="The Incerto, Simulated">
-<meta property="og:description" content="Taleb's core ideas as live simulations: coin-flip fund managers, Russian roulette, the turkey, Extremistan, the blowup artist, the barbell, and the minority rule. Pull the levers yourself.">
+<meta property="og:description" content="Taleb's core ideas as live simulations: coin-flip fund managers, Russian roulette, the turkey, Extremistan, the blowup artist, the barbell, who pays, and the minority rule. Pull the levers yourself.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ruggg.github.io/incerto/">
 <meta property="og:image" content="https://ruggg.github.io/incerto/og-image.png">
@@ -273,7 +273,7 @@
     <div class="hero-inner">
       <p class="eyebrow">Nassim Nicholas Taleb · The Incerto, Simulated</p>
       <h1>One of these lines is about to look like a genius.</h1>
-      <p class="hero-sub">Every path above is a fund manager flipping a fair coin. No skill exists anywhere on this screen — yet one track record will end up good enough to sell books about. <strong>Fooled by Randomness</strong>, <strong>The Black Swan</strong>, and <strong>Antifragile</strong> are one long argument about that line. Below, you get to pull the levers yourself.</p>
+      <p class="hero-sub">Every path above is a fund manager flipping a fair coin. No skill exists anywhere on this screen — yet one track record will end up good enough to sell books about. Taleb's <strong>Incerto</strong> — from <strong>Fooled by Randomness</strong> to <strong>Skin in the Game</strong> — is one long argument about that line. Below, you get to pull the levers yourself.</p>
     </div>
   </div>
 </header>
@@ -579,7 +579,7 @@
       <hr>
     </div>
     <div class="col">
-      <p>Two books of diagnosis; now the prescription. Taleb's starting move is to point out that our vocabulary is missing a word. The opposite of <em>fragile</em> is not <em>robust</em> — the robust merely ignores disorder. The true opposite is something that <span class="keyterm">gains</span> from disorder: stressed muscles, tinkered technologies, small restaurants, evolution itself. He has to coin the word: <span class="keyterm">antifragile</span>.</p>
+      <p>Two books of diagnosis; now the prescription. Taleb's starting move is to point out that our vocabulary is missing a word. The opposite of <em>fragile</em> is not <em>robust</em> — the robust merely ignores disorder. The true opposite is something that <span class="keyterm">gains</span> from disorder: stressed muscles, tinkered technologies, restaurant scenes, evolution itself. He has to coin the word: <span class="keyterm">antifragile</span>.</p>
       <p>The deep idea is that fragility is <em>measurable</em> even when events aren't predictable — it's just curvature. If harm accelerates as shocks get bigger (concave), volatility hurts you on average. If gains accelerate (convex), volatility feeds you. No forecasting required: you can inspect the curve you're standing on. The machine below shakes three objects with <em>identical, fair, zero-mean</em> turbulence.</p>
     </div>
 
@@ -645,43 +645,53 @@
     <p class="aphorism">“It is far easier to figure out if something is fragile than to predict the occurrence of an event that may harm it.”<span class="attr">Antifragile</span></p>
   </section>
 
-  <div class="coda">
+  <section id="book-4">
+    <div class="col book-head">
+      <p class="volume">Volume IV · 2018</p>
+      <h2>Skin in the Game</h2>
+      <p class="epigraph">“Don't tell me what you think, tell me what's in your portfolio.”</p>
+      <hr>
+    </div>
     <div class="col">
-      <h2>The Incerto, in one breath</h2>
-      <p>The world that matters is Extremistan, where a handful of jumps outweigh decades of crawl (Vol. II) — so the track records you admire are mostly survivorship and the smoothness you trust is mostly unexploded risk (Vol. I). You cannot predict the jumps; you can only choose your curvature before they arrive (Vol. III). Clip your left tail, keep a cheap open right tail, and let time — the only honest statistician — do the sorting.</p>
-      <p class="fine">Which is also why these books have aged the way they have. Taleb's own rule for that:</p>
+      <p>The Incerto's closing argument is about a missing <span class="keyterm">symmetry</span>. Hammurabi got there 3,800 years before modern finance: if the house collapses and kills the owner, the builder is put to death — not cruelty but symmetry, a life for a life, because the builder will always know more about the hidden risks than any inspector, and only his own exposure makes that knowledge honest. You have already met the modern violation: Fund B's manager in Sim 06, banking bonuses across the very futures where his clients burned. That was one man. The final book asks what happens to an entire society wired that way.</p>
+      <p>So: one last pair of worlds. A hundred and twenty risk-takers, identical in both — same appetites, same ventures, same luck, and (by construction, as always on this page) the same average returns. The <em>only</em> difference is the address the losses are delivered to. In one society, whoever blows up eats the loss personally. In the other, every blowup is quietly covered by a levy on the whole society, and the show goes on.</p>
     </div>
 
-    <div class="sim mini" id="simx4">
+    <div class="sim" id="sim9">
       <div class="sim-panel">
         <div class="sim-head">
-          <span class="sim-no">Postscript I</span>
-          <h3 class="sim-title">The Lindy effect</h3>
-          <span class="sim-book">Antifragile, ch. 20</span>
+          <span class="sim-no">Sim 09</span>
+          <h3 class="sim-title">Who pays?</h3>
+          <span class="sim-book">Risk transfer · selection</span>
         </div>
-        <div class="sim-canvas-wrap"><canvas id="cx4" aria-label="Chart comparing expected remaining lifespan for perishable things, which declines with age, and for ideas and books, which grows with age."></canvas></div>
+        <div class="sim-canvas-wrap"><canvas id="c9" aria-label="Two societies of one hundred twenty identical risk-takers with identical luck; in one, blowups ruin the actor personally, in the other losses are socialized. Their wealth and the share held by reckless actors diverge over sixty years."></canvas></div>
         <div class="sim-deck">
-          <div class="ctl"><label for="sx4-age">Survived so far</label><input type="range" id="sx4-age" min="1" max="100" step="1" value="25"><output id="sx4-age-out">25 yrs</output></div>
+          <div class="ctl"><label for="s9-sev">Blowup severity</label><input type="range" id="s9-sev" min="30" max="95" step="5" value="85"><output id="s9-sev-out">85%</output></div>
+          <button class="btn" id="s9-run">Same people, new luck</button>
         </div>
         <div class="sim-stats">
-          <div class="stat"><span class="k">A 25-year-old human, expected remaining</span><span class="v" id="sx4-h">–</span></div>
-          <div class="stat"><span class="k">A 25-year-old book, expected remaining</span><span class="v amber" id="sx4-b">–</span></div>
+          <div class="stat"><span class="k">Careful citizen, skin society</span><span class="v green" id="s9-a">–</span></div>
+          <div class="stat"><span class="k">Careful citizen, bailouts</span><span class="v" id="s9-b">–</span></div>
+          <div class="stat"><span class="k">Blowups, final decade</span><span class="v" id="s9-blow">–</span></div>
+          <div class="stat"><span class="k">High rollers' share at end</span><span class="v" id="s9-shr">–</span></div>
+          <div class="stat"><span class="k">Personally ruined</span><span class="v red" id="s9-dead">–</span></div>
+          <div class="stat"><span class="k">Average wealth (both)</span><span class="v" id="s9-avg">–</span></div>
         </div>
-        <div class="sim-ticker" role="status" id="sx4-ticker"></div>
-        <div class="sim-take"><strong>The lesson.</strong> Perishables age toward death; the non-perishable — books, ideas, technologies — age <em>away</em> from it: every year survived is evidence of robustness, so expected remaining life grows with age. <em>Fooled by Randomness</em> is twenty-five years old this year. Lindy says: plan on it outliving most things published this morning.</div>
+        <div class="sim-ticker" role="status" id="s9-ticker"></div>
+        <div class="sim-take"><strong>The lesson.</strong> When actors bear their own tails, ruin is informative: the reckless remove themselves, the prudent inherit the capital, and the system grows calmer decade by decade without anyone regulating anything — the restaurant business is antifragile precisely because individual restaurants, and their owners, are fragile. Transfer the losses and you get the mirror image: nobody exits, blowups never slow, and — the quiet scandal — the gamblers end up owning the place, because every rescue is financed by taxing the careful. Nothing here is rigged: both societies contain identical people with identical luck, and their average returns are identical <em>by construction</em> — any single run's averages wobble, but the expectation is the same; the rules only change who ends up holding the wealth, and how often the ground shakes. Honesty requires the fine print too: the skin society's price is visible and personal — its ruined risk-takers include a few careful citizens who were simply unlucky, and the green line's median doesn't exclude them — while the bailout society's price is invisible and universal. And slide the severity down for the subtlest finding: when losses stop being fatal, the ruin dynamic vanishes — nobody exits, both societies shake alike, the system never learns — but the quiet tax on the careful never stops. Ruin was the teacher; the transfer is just the theft.</div>
       </div>
     </div>
 
     <div class="col">
-      <p class="fine">The Incerto kept growing after 2012, and its final volume contains the strangest result of all — how a tiny, stubborn minority ends up deciding what everyone eats, says, and believes. One last machine:</p>
+      <p>Asymmetry is the book's engine — losses that flow one way, exposures that don't match rewards. And its strangest, least financial chapter is about what one particular asymmetry does to how societies acquire their norms at all. Not by consensus. Not by majority. Watch:</p>
     </div>
 
-    <div class="sim mini" id="simx5">
+    <div class="sim" id="simx5">
       <div class="sim-panel">
         <div class="sim-head">
-          <span class="sim-no">Postscript II</span>
+          <span class="sim-no">Sim 10</span>
           <h3 class="sim-title">The minority rule</h3>
-          <span class="sim-book">Skin in the Game, 2018</span>
+          <span class="sim-book">The dictatorship of the stubborn</span>
         </div>
         <div class="sim-canvas-wrap"><canvas id="cx5" aria-label="A grid of dinner tables where a single stubborn guest forces the whole table to serve X, then a cascade showing tables forcing venues and venues forcing the entire market."></canvas></div>
         <div class="sim-deck">
@@ -700,9 +710,39 @@
       </div>
     </div>
 
+    <p class="aphorism">“Those who talk should do and only those who do should talk.”<span class="attr">Skin in the Game</span></p>
+  </section>
+
+  <div class="coda">
+    <div class="col">
+      <h2>The Incerto, in one breath</h2>
+      <p>The world that matters is Extremistan, where a handful of jumps outweigh decades of crawl (Vol. II) — so the track records you admire are mostly survivorship and the smoothness you trust is mostly unexploded risk (Vol. I). You cannot predict the jumps; you can only choose your curvature before they arrive (Vol. III) — and a society stays honest only while the people making its bets are exposed to their own tails (Vol. IV). Clip your left tail, keep a cheap open right tail, and let time — the only honest statistician — do the sorting.</p>
+      <p class="fine">Which is also why these books have aged the way they have. Taleb's own rule for that:</p>
+    </div>
+
+    <div class="sim mini" id="simx4">
+      <div class="sim-panel">
+        <div class="sim-head">
+          <span class="sim-no">Postscript</span>
+          <h3 class="sim-title">The Lindy effect</h3>
+          <span class="sim-book">Antifragile, ch. 20</span>
+        </div>
+        <div class="sim-canvas-wrap"><canvas id="cx4" aria-label="Chart comparing expected remaining lifespan for perishable things, which declines with age, and for ideas and books, which grows with age."></canvas></div>
+        <div class="sim-deck">
+          <div class="ctl"><label for="sx4-age">Survived so far</label><input type="range" id="sx4-age" min="1" max="100" step="1" value="25"><output id="sx4-age-out">25 yrs</output></div>
+        </div>
+        <div class="sim-stats">
+          <div class="stat"><span class="k">A 25-year-old human, expected remaining</span><span class="v" id="sx4-h">–</span></div>
+          <div class="stat"><span class="k">A 25-year-old book, expected remaining</span><span class="v amber" id="sx4-b">–</span></div>
+        </div>
+        <div class="sim-ticker" role="status" id="sx4-ticker"></div>
+        <div class="sim-take"><strong>The lesson.</strong> Perishables age toward death; the non-perishable — books, ideas, technologies — age <em>away</em> from it: every year survived is evidence of robustness, so expected remaining life grows with age. <em>Fooled by Randomness</em> is twenty-five years old this year. Lindy says: plan on it outliving most things published this morning.</div>
+      </div>
+    </div>
+
     <div class="col">
       <p class="fine">Every number on this page was generated in your browser while you read — seeded Monte Carlo, no data, no server (with one exception: your own trigger pulls in Sim 02 are unseeded and unrepeatable, which seems only fair). Press the re-run buttons: the specifics will come out different, because that is the entire point. If the lessons come out different too, that would be the most Talebian result of all.</p>
-      <p class="fine">The books, in reading order: <em>Fooled by Randomness</em> (2001) · <em>The Black Swan</em> (2007) · <em>Antifragile</em> (2012) — with <em>The Bed of Procrustes</em> (2010) and <em>Skin in the Game</em> (2018) completing the Incerto. This page is a homage and a toy, not a substitute: the books contain the parts that cannot be simulated.</p>
+      <p class="fine">The books, in reading order: <em>Fooled by Randomness</em> (2001) · <em>The Black Swan</em> (2007) · <em>Antifragile</em> (2012) · <em>Skin in the Game</em> (2018) — with <em>The Bed of Procrustes</em> (2010), the aphorisms, completing the Incerto; those resist simulation on purpose. This page is a homage and a toy, not a substitute: the books contain the parts that cannot be simulated.</p>
     </div>
   </div>
 
@@ -838,15 +878,16 @@ function whenVisible(el, onVisible, onHidden) {
     }
     let lo = Infinity, hi = -Infinity;
     for (const p of paths) for (let t = 0; t <= STEPS; t++) { if (p[t] < lo) lo = p[t]; if (p[t] > hi) hi = p[t]; }
-    const pad = 30;
+    const padT = 24;
     const X = t => (t / STEPS) * w;
-    const Y = v => pad + (1 - (v - lo) / (hi - lo)) * (h - 2 * pad);
+    const usable = h * 0.70 - padT; // keep the losing half of the cohort above the text scrim
+    const Y = v => padT + (1 - (v - lo) / (hi - lo)) * usable;
     const upto = Math.max(2, Math.floor(progress * STEPS));
 
     for (let i = 0; i < paths.length; i++) {
       if (i === best) continue;
       ctx.beginPath();
-      ctx.strokeStyle = 'rgba(126,133,152,0.10)';
+      ctx.strokeStyle = 'rgba(126,133,152,0.16)';
       ctx.lineWidth = 1;
       const p = paths[i];
       ctx.moveTo(X(0), Y(p[0]));
@@ -2549,7 +2590,180 @@ function binom(rng, n, p) {
   updateStats();
 })();
 
-/* ================= POSTSCRIPT II: the minority rule ================= */
+/* ================= SIM 09: who pays? ================= */
+(function sim09() {
+  const canvas = document.getElementById('c9');
+  const N = 120, T = 60, PMAX = 0.12;
+  let seed = 7100, sev = 0.85;
+  let A = null, B = null, reveal = 1e9, animRaf = null;
+
+  function gShare(w, r) {
+    let g = 0, tot = 0;
+    for (let i = 0; i < w.length; i++) { tot += w[i]; if (r[i] > 2 / 3) g += w[i]; }
+    return tot > 0 ? g / tot : 0;
+  }
+
+  function simulate() {
+    const rng = mulberry32(seed);
+    const r = [];
+    const u = new Float64Array(N * T), z = new Float64Array(N * T);
+    for (let i = 0; i < N; i++) r.push(rng());
+    for (let i = 0; i < N * T; i++) { u[i] = rng(); z[i] = randn(rng); }
+
+    function run(bailout) {
+      const w = new Float64Array(N).fill(1);
+      const dead = new Array(N).fill(false);
+      const totals = [1], shares = [gShare(w, r)], prudent = [1];
+      const blowCount = new Array(T).fill(0);
+      for (let t = 0; t < T; t++) {
+        let levy = 0;
+        for (let i = 0; i < N; i++) {
+          if (dead[i]) continue;
+          const idx = i * T + t;
+          const p = PMAX * r[i];
+          if (u[idx] < p) {
+            blowCount[t]++;
+            const loss = sev * w[i];
+            if (bailout) levy += loss; // venture burned; the commons restores the actor
+            else {
+              w[i] -= loss;
+              if (w[i] < 0.02) dead[i] = true;
+            }
+          } else {
+            const mu = (0.02 + sev * p) / (1 - p); // premium set for arithmetic-EV parity across appetites
+            w[i] *= Math.max(0.05, 1 + mu + (0.05 + 0.10 * r[i]) * z[idx]);
+          }
+        }
+        if (bailout && levy > 0) {
+          let tot = 0;
+          for (let i = 0; i < N; i++) tot += w[i];
+          const f = Math.max(0.01, 1 - levy / tot);
+          for (let i = 0; i < N; i++) w[i] *= f;
+        }
+        let tot = 0;
+        for (let i = 0; i < N; i++) tot += w[i];
+        totals.push(tot / N);
+        shares.push(gShare(w, r));
+        const prud = [];
+        for (let i = 0; i < N; i++) if (r[i] < 1 / 3) prud.push(w[i]);
+        prud.sort((a, b) => a - b);
+        prudent.push(prud[Math.floor(prud.length / 2)]);
+      }
+      let deadHigh = 0, nHigh = 0;
+      for (let i = 0; i < N; i++) {
+        if (r[i] > 2 / 3) { nHigh++; if (dead[i]) deadHigh++; }
+      }
+      return {
+        totals, shares, prudent, deadHigh, nHigh,
+        last10: blowCount.slice(T - 10).reduce((a, b) => a + b, 0),
+        deadCount: dead.filter(Boolean).length,
+      };
+    }
+    A = run(false);
+    B = run(true);
+    updateStats();
+  }
+
+  function updateStats() {
+    const pa = A.prudent[T], pb = B.prudent[T];
+    document.getElementById('s9-a').textContent = '×' + fmt(pa, 2);
+    const bEl = document.getElementById('s9-b');
+    bEl.textContent = '×' + fmt(pb, 2);
+    bEl.className = 'v ' + (pb < pa * 0.85 ? 'red' : '');
+    document.getElementById('s9-blow').textContent = 'skin ' + A.last10 + ' · bailout ' + B.last10;
+    document.getElementById('s9-shr').textContent = 'skin ' + fmt(A.shares[T] * 100, 0) + '% · bailout ' + fmt(B.shares[T] * 100, 0) + '%';
+    document.getElementById('s9-dead').textContent = 'skin ' + A.deadCount + ' · bailout 0';
+    const ratio = A.totals[T] / Math.max(B.totals[T], 1e-9);
+    document.getElementById('s9-avg').textContent = '×' + fmt(A.totals[T], 1) + ' vs ×' + fmt(B.totals[T], 1) +
+      (ratio > 0.8 && ratio < 1.25 ? ' — a wash' : ' — same EV; one draw is noisy');
+    const t = document.getElementById('s9-ticker');
+    if (sev < 0.5) {
+      t.innerHTML = 'At <b>' + fmt(sev * 100, 0) + '%</b>, blowups stop killing: almost nobody exits (' + A.deadCount + ' ruins), and the two societies shake equally often (' + A.last10 + ' vs ' + B.last10 + ' blowups a decade) — <b>ruin was doing the stabilizing</b>. What survives is the transfer: the careful citizen still ends at ×' + fmt(pa, 1) + ' vs <span class="r">×' + fmt(pb, 1) + '</span>, because the levies never stop.';
+    } else {
+      t.innerHTML = 'Same 120 people, same luck, same average returns — only the <b>address of the losses</b> changed. On <em>average</em> the societies look alike; the mean is hiding everything, one last time. The careful citizen compounded to <span class="g">×' + fmt(pa, 1) + '</span> under skin in the game and was taxed down to <span class="r">×' + fmt(pb, 1) + '</span> under bailouts, while the high rollers — ' + A.deadHigh + ' of ' + A.nHigh + ' personally ruined in one world (' + A.deadCount + ' ruins in all) — ended the other holding <span class="r">' + fmt(B.shares[T] * 100, 0) + '%</span> of everything.';
+    }
+  }
+
+  const cv = makeCanvas(canvas, w => Math.max(280, Math.min(360, w * 0.4)), draw);
+  function draw(ctx, w, h) {
+    ctx.fillStyle = '#14161C'; ctx.fillRect(0, 0, w, h);
+    if (!A) return;
+    const padL = 46, padR = 46, padT = 36, padB = 28;
+    const cw = w - padL - padR, ch = h - padT - padB;
+    let hi = -Infinity, lo = Infinity;
+    for (const S of [A, B]) for (const v of S.prudent) {
+      const l = Math.log10(Math.max(v, 0.01));
+      if (l > hi) hi = l;
+      if (l < lo) lo = l;
+    }
+    hi += 0.12; lo -= 0.06;
+    const X = t => padL + t / T * cw;
+    const Yv = v => padT + (1 - (Math.log10(Math.max(v, 0.01)) - lo) / (hi - lo)) * ch;
+    const Ys = s => padT + (1 - s) * ch;
+    ctx.font = '10px ' + MONO; ctx.fillStyle = '#7E8598';
+    [0.25, 0.5, 1, 2, 4, 8].forEach(v => {
+      const l = Math.log10(v);
+      if (l > lo && l < hi) {
+        const y = padT + (1 - (l - lo) / (hi - lo)) * ch;
+        ctx.strokeStyle = 'rgba(42,46,58,0.6)';
+        ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w - padR, y); ctx.stroke();
+        ctx.textAlign = 'right';
+        ctx.fillText('×' + v, padL - 5, y + 3);
+      }
+    });
+    ctx.textAlign = 'left';
+    ctx.fillStyle = 'rgba(126,133,152,0.8)';
+    ctx.fillText('100%', w - padR + 5, Ys(1) + 3);
+    ctx.fillText('0%', w - padR + 5, Ys(0) + 3);
+    ctx.fillStyle = '#7E8598'; ctx.textAlign = 'center';
+    [0, 20, 40, 60].forEach(t => ctx.fillText(t + 'y', X(t), h - 8));
+    const upto = Math.min(reveal, T);
+    ctx.setLineDash([3, 4]); ctx.globalAlpha = 0.5; ctx.lineWidth = 1.2;
+    [[A, '#5CB98B'], [B, '#E4523F']].forEach(([S, c]) => {
+      ctx.strokeStyle = c;
+      ctx.beginPath();
+      for (let t = 0; t <= upto; t++) {
+        const y = Ys(S.shares[t]);
+        if (t === 0) ctx.moveTo(X(t), y); else ctx.lineTo(X(t), y);
+      }
+      ctx.stroke();
+    });
+    ctx.setLineDash([]); ctx.globalAlpha = 1;
+    [[A, '#5CB98B', 'SKIN IN THE GAME'], [B, '#E4523F', 'BAILOUT SOCIETY']].forEach(([S, c, name], i) => {
+      ctx.strokeStyle = c; ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let t = 0; t <= upto; t++) {
+        const y = Yv(S.prudent[t]);
+        if (t === 0) ctx.moveTo(X(t), y); else ctx.lineTo(X(t), y);
+      }
+      ctx.stroke();
+      ctx.fillStyle = c; ctx.font = '10px ' + MONO; ctx.textAlign = 'left';
+      ctx.fillText('■ ' + name, padL + i * 168, padT - 20);
+    });
+    ctx.fillStyle = '#7E8598'; ctx.textAlign = 'left'; ctx.font = '9px ' + MONO;
+    ctx.fillText(w < 660 ? 'SOLID: CAREFUL CITIZEN (LOG) · DASHED: HIGH-ROLLER SHARE' : 'SOLID: THE MEDIAN CAREFUL CITIZEN’S WEALTH (LOG, LEFT) · DASHED: SHARE OF WEALTH HELD BY HIGH ROLLERS (RIGHT)', padL, padT - 6);
+  }
+
+  function animate() {
+    if (animRaf) cancelAnimationFrame(animRaf);
+    if (REDUCED) { reveal = 1e9; cv.redraw(); return; }
+    reveal = 0;
+    (function step() {
+      reveal += 1;
+      cv.redraw();
+      if (reveal < T) animRaf = requestAnimationFrame(step); else animRaf = null;
+    })();
+  }
+
+  bindRange('s9-sev', 's9-sev-out', v => v + '%', v => { sev = v / 100; simulate(); reveal = 1e9; cv.redraw(); });
+  document.getElementById('s9-run').addEventListener('click', () => { seed++; simulate(); animate(); });
+  simulate();
+  cv.redraw();
+  let started = false;
+  whenVisible(canvas, () => { if (!started) { started = true; animate(); } });
+})();
+
+/* ================= SIM 10: the minority rule ================= */
 (function simMinority() {
   const canvas = document.getElementById('cx5');
   const G = 96;
