@@ -1,0 +1,2525 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Incerto, Simulated</title>
+<meta name="description" content="Nassim Taleb's Incerto — Fooled by Randomness, The Black Swan, and Antifragile — explained through twelve live, manipulable Monte Carlo simulations running in your browser.">
+<meta property="og:title" content="The Incerto, Simulated">
+<meta property="og:description" content="Taleb's core ideas as live simulations: coin-flip fund managers, Russian roulette, the turkey, Extremistan, the blowup artist, and the barbell. Pull the levers yourself.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ruggg.github.io/incerto/">
+<meta property="og:image" content="https://ruggg.github.io/incerto/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A6%A2%3C/text%3E%3C/svg%3E">
+
+<style>
+  :root {
+    --paper: #E8E3D5;
+    --paper-deep: #DFD9C8;
+    --ink: #201D18;
+    --ink-soft: #55503F;
+    --ink-faint: #857D66;
+    --rule: #C9C2AE;
+    --panel: #14161C;
+    --panel-raised: #1B1E27;
+    --panel-line: #2A2E3A;
+    --panel-text: #C6CBD8;
+    --panel-muted: #7E8598;
+    --amber: #F0B24A;
+    --amber-dim: #8A6B34;
+    --red: #C93A2B;
+    --red-text: #A62A1D;
+    --red-bright: #E4523F;
+    --green: #5CB98B;
+    --serif-display: Baskerville, 'Libre Baskerville', 'Palatino Linotype', Palatino, Georgia, serif;
+    --serif-body: Charter, 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+    --mono: ui-monospace, 'SF Mono', Menlo, 'Cascadia Mono', Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif-body);
+    font-size: 1.06rem;
+    line-height: 1.62;
+  }
+  ::selection { background: var(--amber); color: var(--ink); }
+
+  /* ---------- essay column ---------- */
+  .col { max-width: 41rem; margin: 0 auto; padding: 0 1.25rem; }
+  .col p { margin: 0 0 1.1em; }
+  .col em { font-family: var(--serif-body); }
+  .col a { color: var(--red-text); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--red-text) 40%, transparent); }
+  .keyterm { color: var(--red-text); font-style: italic; }
+
+  h1, h2, h3 { font-family: var(--serif-display); font-weight: 500; text-wrap: balance; }
+
+  /* ---------- hero ---------- */
+  .hero {
+    position: relative;
+    background: var(--panel);
+    color: var(--panel-text);
+    overflow: hidden;
+    border-bottom: 3px solid var(--red);
+  }
+  .hero canvas { display: block; width: 100%; height: 62vh; min-height: 380px; max-height: 640px; }
+  .hero-overlay {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    background: linear-gradient(180deg, rgba(20,22,28,0.10) 30%, rgba(20,22,28,0.88) 78%, rgba(20,22,28,0.96) 100%);
+    pointer-events: none;
+  }
+  .hero-inner { max-width: 52rem; margin: 0 auto; padding: 0 1.25rem 2.6rem; width: 100%; }
+  .hero .eyebrow {
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--amber); margin: 0 0 0.9rem;
+  }
+  .hero h1 {
+    font-size: clamp(1.9rem, 5.2vw, 3.4rem);
+    font-style: italic; line-height: 1.12; margin: 0 0 0.8rem; color: #EDEFF4;
+  }
+  .hero-sub { max-width: 36rem; color: var(--panel-muted); font-size: 1.02rem; margin: 0; }
+  .hero-sub strong { color: var(--panel-text); font-weight: 500; }
+  .hero-status {
+    position: absolute; top: 0.9rem; left: 0; right: 0;
+    display: flex; justify-content: space-between;
+    max-width: 52rem; margin: 0 auto; padding: 0 1.25rem;
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em;
+    color: var(--panel-muted); text-transform: uppercase;
+  }
+  .hero-status .lucky { color: var(--amber); }
+
+  /* ---------- book sections ---------- */
+  .book-head { margin: 4.5rem auto 2.2rem; }
+  .book-head .volume {
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--red-text); margin: 0 0 0.4rem;
+  }
+  .book-head h2 {
+    font-size: clamp(1.7rem, 4vw, 2.5rem); font-style: italic;
+    margin: 0 0 0.5rem; line-height: 1.15;
+  }
+  .book-head .epigraph {
+    color: var(--ink-soft); font-style: italic; margin: 0;
+    padding-left: 1rem; border-left: 2px solid var(--rule);
+  }
+  .book-head hr { border: 0; border-top: 1px solid var(--rule); margin: 2.2rem 0 0; }
+
+  /* ---------- instrument panel ---------- */
+  .sim {
+    max-width: 62rem; margin: 2.6rem auto; padding: 0 1.25rem;
+  }
+  .sim-panel {
+    background: var(--panel); color: var(--panel-text);
+    border: 1px solid var(--panel-line); border-radius: 4px;
+    box-shadow: 0 18px 50px -22px rgba(24,20,10,0.55);
+    overflow: hidden;
+  }
+  .sim-head {
+    display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap;
+    padding: 0.85rem 1.2rem; border-bottom: 1px solid var(--panel-line);
+    background: var(--panel-raised);
+  }
+  .sim-head .sim-no {
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.14em;
+    color: var(--amber); text-transform: uppercase; white-space: nowrap;
+  }
+  .sim-head .sim-title {
+    font-family: var(--serif-display); font-style: italic;
+    font-size: 1.15rem; color: #E8EAF0; margin: 0;
+  }
+  .sim-head .sim-book {
+    margin-left: auto; font-family: var(--mono); font-size: 0.66rem;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--panel-muted);
+    white-space: nowrap;
+  }
+  .sim-canvas-wrap { position: relative; }
+  .sim canvas { display: block; width: 100%; }
+
+  .sim-deck {
+    display: flex; flex-wrap: wrap; gap: 0.9rem 1.6rem; align-items: center;
+    padding: 0.9rem 1.2rem; border-top: 1px solid var(--panel-line);
+    background: var(--panel-raised);
+    font-family: var(--mono); font-size: 0.78rem;
+  }
+  .ctl { display: flex; align-items: center; gap: 0.55rem; }
+  .ctl label { color: var(--panel-muted); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
+  .ctl output { color: var(--amber); font-variant-numeric: tabular-nums; min-width: 3.2ch; }
+  .ctl input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    width: 130px; height: 3px; border-radius: 2px;
+    background: var(--panel-line); outline-offset: 4px;
+  }
+  .ctl input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--amber); border: 2px solid var(--panel);
+    box-shadow: 0 0 0 1px var(--amber-dim); cursor: pointer;
+  }
+  .ctl input[type="range"]::-moz-range-thumb {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--amber); border: 2px solid var(--panel);
+    box-shadow: 0 0 0 1px var(--amber-dim); cursor: pointer;
+  }
+  .btn {
+    font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.08em;
+    text-transform: uppercase; cursor: pointer;
+    color: var(--amber); background: transparent;
+    border: 1px solid var(--amber-dim); border-radius: 3px;
+    padding: 0.42rem 0.85rem;
+  }
+  .btn:hover { background: rgba(240,178,74,0.12); }
+  .btn:focus-visible, .ctl input:focus-visible, .toggle input:focus-visible {
+    outline: 2px solid var(--amber); outline-offset: 2px;
+  }
+  .btn.primary { background: var(--amber); color: #17130A; border-color: var(--amber); font-weight: 700; }
+  .btn.primary:hover { background: #F7C468; }
+  .btn.danger { color: var(--red-bright); border-color: #6E2F27; }
+  .btn.danger:hover { background: rgba(228,82,63,0.12); }
+  .btn:disabled { opacity: 0.4; cursor: default; }
+  .toggle { display: flex; align-items: center; gap: 0.45rem; cursor: pointer; color: var(--panel-muted); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .toggle input { accent-color: var(--amber); }
+
+  .sim-stats {
+    display: flex; flex-wrap: wrap; gap: 0.4rem 2rem;
+    padding: 0.75rem 1.2rem; border-top: 1px solid var(--panel-line);
+    font-family: var(--mono); font-size: 0.8rem;
+  }
+  .stat { display: flex; flex-direction: column; gap: 0.1rem; }
+  .stat .k { color: var(--panel-muted); font-size: 0.64rem; letter-spacing: 0.1em; text-transform: uppercase; }
+  .stat .v { color: #E8EAF0; font-variant-numeric: tabular-nums; font-size: 0.95rem; }
+  .stat .v.amber { color: var(--amber); }
+  .stat .v.red { color: var(--red-bright); }
+  .stat .v.green { color: var(--green); }
+
+  .sim-take {
+    padding: 0.9rem 1.2rem; border-top: 1px solid var(--panel-line);
+    font-family: var(--serif-body); font-size: 0.95rem; line-height: 1.55;
+    color: var(--panel-muted); background: var(--panel-raised);
+  }
+  .sim-take strong { color: var(--amber); font-weight: 500; }
+
+  .sim-ticker {
+    padding: 0.55rem 1.2rem; border-top: 1px solid var(--panel-line);
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.02em;
+    color: var(--panel-muted); min-height: 1.9em;
+  }
+  .sim-ticker b { color: var(--amber); font-weight: 500; }
+  .sim-ticker .r { color: var(--red-bright); }
+  .sim-ticker .g { color: var(--green); }
+  .seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--panel-line); border-radius: 3px; overflow: hidden; }
+  .seg button {
+    font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.05em;
+    text-transform: uppercase; background: transparent; color: var(--panel-muted);
+    border: 0; border-right: 1px solid var(--panel-line);
+    padding: 0.42rem 0.55rem; cursor: pointer;
+  }
+  .seg button:last-child { border-right: 0; }
+  .seg button.on { background: var(--amber); color: #17130A; font-weight: 700; }
+  .seg button:focus-visible { outline: 2px solid var(--amber); outline-offset: -2px; }
+  .sim.mini { max-width: 48rem; }
+  .choice-row {
+    display: flex; flex-wrap: wrap; gap: 0.5rem;
+    padding: 0.8rem 1.2rem; border-top: 1px solid var(--panel-line);
+  }
+  .choice-row .btn { text-transform: none; letter-spacing: 0.01em; font-size: 0.78rem; }
+  [hidden] { display: none !important; }
+
+  /* ---------- aphorism pull ---------- */
+  .aphorism {
+    max-width: 34rem; margin: 3rem auto; padding: 0 1.25rem;
+    font-family: var(--serif-display); font-style: italic;
+    font-size: 1.35rem; line-height: 1.4; text-align: center; color: var(--ink);
+  }
+  .aphorism .attr {
+    display: block; margin-top: 0.7rem;
+    font-family: var(--mono); font-style: normal; font-size: 0.68rem;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft);
+  }
+
+  /* ---------- footer ---------- */
+  .coda {
+    background: var(--panel); color: var(--panel-muted);
+    margin-top: 5rem; padding: 3.2rem 0 3.6rem;
+    border-top: 3px solid var(--red);
+  }
+  .coda .col p { color: var(--panel-text); }
+  .coda .col .fine { color: var(--panel-muted); font-size: 0.85rem; }
+  .coda h2 { color: #EDEFF4; font-style: italic; margin: 0 0 1rem; }
+
+  @media (max-width: 640px) {
+    .sim { padding: 0 0.6rem; }
+    .sim-deck { gap: 0.7rem 1.1rem; }
+    .ctl input[type="range"] { width: 100px; }
+    .sim-stats { gap: 0.4rem 1.2rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <canvas id="hero-canvas" aria-label="Live simulation: 400 coin-flipping fund managers; the luckiest track record glows amber."></canvas>
+  <div class="hero-status" id="hero-status" aria-hidden="true">
+    <span id="hero-count">400 managers · pure coin flips</span>
+    <span class="lucky" id="hero-lucky"></span>
+  </div>
+  <div class="hero-overlay">
+    <div class="hero-inner">
+      <p class="eyebrow">Nassim Nicholas Taleb · The Incerto, Simulated</p>
+      <h1>One of these lines is about to look like a genius.</h1>
+      <p class="hero-sub">Every path above is a fund manager flipping a fair coin. No skill exists anywhere on this screen — yet one track record will end up good enough to sell books about. <strong>Fooled by Randomness</strong>, <strong>The Black Swan</strong>, and <strong>Antifragile</strong> are one long argument about that line. Below, you get to pull the levers yourself.</p>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <section id="book-1">
+    <div class="col book-head">
+      <p class="volume">Volume I · 2001</p>
+      <h2>Fooled by Randomness</h2>
+      <p class="epigraph">“Mild success can be explainable by skills and labor. Wild success is attributable to variance.”</p>
+      <hr>
+    </div>
+    <div class="col">
+      <p>Taleb's first book asks one impolite question: <em>how much of what you call success would survive a re-run of the world?</em> Not a metaphorical re-run — a literal one. His tool is the Monte Carlo engine: generate thousands of <span class="keyterm">alternative histories</span>, and judge a decision by how it fares across all of them, not by the single history that happened to occur.</p>
+      <p>The machines below are such engines. The first one manufactures investment geniuses out of nothing at all.</p>
+    </div>
+
+    <div class="sim" id="sim1">
+      <div class="sim-panel">
+        <div class="sim-head">
+          <span class="sim-no">Sim 01</span>
+          <h3 class="sim-title">The coin-flip funds</h3>
+          <span class="sim-book">Survivorship bias</span>
+        </div>
+        <div class="sim-canvas-wrap"><canvas id="c1" aria-label="Simulation: a cohort of fund managers flipping coins each year; losers close their funds, and after a decade a handful of perfect track records remain by chance alone."></canvas></div>
+        <div class="sim-deck">
+          <div class="ctl"><label for="s1-n">Managers</label><input type="range" id="s1-n" min="0" max="3" step="1" value="2"><output id="s1-n-out">10,000</output></div>
+          <div class="ctl"><label for="s1-y">Years</label><input type="range" id="s1-y" min="5" max="15" step="1" value="10"><output id="s1-y-out">10</output></div>
+          <label class="toggle"><input type="checkbox" id="s1-grave"> Show the graveyard</label>
+          <label class="toggle"><input type="checkbox" id="s1-skill"> 10% of managers have real skill</label>
+          <button class="btn" id="s1-run">Re-run the industry</button>
+        </div>
+        <div class="sim-stats">
+          <div class="stat"><span class="k">Perfect records</span><span class="v amber" id="s1-surv">–</span></div>
+          <div class="stat"><span class="k" id="s1-exp-k">Expected by pure chance</span><span class="v" id="s1-exp">–</span></div>
+          <div class="stat"><span class="k" id="s1-p1-k">P(at least one “genius”)</span><span class="v" id="s1-p1">–</span></div>
+          <div class="stat"><span class="k">Funds quietly closed</span><span class="v red" id="s1-dead">–</span></div>
+        </div>
+        <div class="sim-ticker" role="status" id="s1-ticker"></div>
+        <div class="sim-take"><strong>The lesson.</strong> Every manager here flips a fair coin: win the year or shut down. Nobody has any skill — yet with 10,000 starters, roughly ten will post a decade of uninterrupted wins, <em>guaranteed</em>. The industry then interviews the ten. Given enough monkeys at typewriters, one types a sonnet; the error is asking the sonnet-monkey about technique. The right question is never “how good is the record?” but “how many started?”</div>
+      </div>
+    </div>
+
+    <div class="col">
+      <p>Survivorship bias is luck you can see, standing on failures you can't. The next machine is nastier: the risk itself is invisible, because the people it killed aren't around to describe it. Taleb's example is a gun.</p>
+      <p>Imagine an eccentric tycoon offers you $10&nbsp;million to play one round of Russian roulette. Five chambers out of six, you get rich. The sixth, you get an obituary. Accounting sees only the realized outcome: a $10&nbsp;million profit, booked. The five-in-six world and the one-in-six world are separated by nothing but a click — and history only records the world that happened.</p>
+    </div>
+
+    <div class="sim" id="sim2">
+      <div class="sim-panel">
+        <div class="sim-head">
+          <span class="sim-no">Sim 02</span>
+          <h3 class="sim-title">Russian roulette, replayed</h3>
+          <span class="sim-book">Alternative histories</span>
+        </div>
+        <div class="sim-canvas-wrap"><canvas id="c2" aria-label="Simulation: play Russian roulette for ten million dollars per round, then reveal a grid of two thousand alternative lives showing how many versions of you died."></canvas></div>
+        <div class="sim-deck">
+          <div class="ctl"><label for="s2-ch">Chambers</label><input type="range" id="s2-ch" min="2" max="36" step="1" value="6"><output id="s2-ch-out">6</output></div>
+          <div class="ctl"><label for="s2-r">Rounds per life</label><input type="range" id="s2-r" min="1" max="20" step="1" value="10"><output id="s2-r-out">10</output></div>
+          <button class="btn primary" id="s2-pull">Pull the trigger (+$10M)</button>
+          <button class="btn danger" id="s2-reset" disabled>Reincarnate</button>
+          <button class="btn" id="s2-run">Run 2,000 lives</button>
+        </div>
+        <div class="sim-stats">
+          <div class="stat"><span class="k">Survival odds (theory)</span><span class="v" id="s2-analytic">–</span></div>
+          <div class="stat"><span class="k">Survived (simulated)</span><span class="v green" id="s2-sim">–</span></div>
+          <div class="stat"><span class="k">Each survivor banks</span><span class="v amber" id="s2-savg">–</span></div>
+          <div class="stat"><span class="k">Average across all lives</span><span class="v" id="s2-eavg">–</span></div>
+        </div>
+        <div class="sim-ticker" role="status" id="s2-ticker">Play your own life first. Then run the other 2,000 of you.</div>
+        <div class="sim-take"><strong>The lesson.</strong> $10M won at roulette is not worth $10M earned at dentistry — the difference is the dead copies of you, and they don't give interviews. Judge a decision by the whole ensemble of worlds it creates, not the one you happened to survive. And note what the chambers slider does: at 36 chambers the gun looks safe for years. Rarer bullet, same game — that gun is called a career in finance.</div>
+      </div>
+    </div>
+
+    <div class="col">
+      <p>You don't even need a revolver. Replace the bullet with ordinary multiplication and the same trap reappears wearing a suit — a bet so attractive that any casino would ban it, which still destroys almost everyone who takes it repeatedly.</p>
+    </div>
+
+    <div class="sim mini" id="simx1">
+      <div class="sim-panel">
+        <div class="sim-head">
+          <span class="sim-no">Interlude</span>
+          <h3 class="sim-title">The coin that beats the casino and ruins you anyway</h3>
+          <span class="sim-book">Ergodicity</span>
+        </div>
+        <div class="sim-canvas-wrap"><canvas id="cx1" aria-label="Simulation: 400 players repeatedly bet on a coin that pays plus fifty percent on heads and minus forty percent on tails; the ensemble average grows while the median player is ruined."></canvas></div>
+        <div class="sim-deck">
+          <div class="ctl"><label for="sx1-f">Wager per flip</label><input type="range" id="sx1-f" min="5" max="100" step="5" value="100"><output id="sx1-f-out">100%</output></div>
+          <button class="btn" id="sx1-run">Re-flip 400 lives</button>
+        </div>
+        <div class="sim-stats">
+          <div class="stat"><span class="k">Edge per $1 wagered</span><span class="v green">+5% per flip</span></div>
+          <div class="stat"><span class="k">Typical growth per flip</span><span class="v" id="sx1-g">–</span></div>
+          <div class="stat"><span class="k">Above start after 100 flips</span><span class="v" id="sx1-above">–</span></div>
+          <div class="stat"><span class="k">Richest player's share of all wealth</span><span class="v amber" id="sx1-top">–</span></div>
+        </div>
+        <div class="sim-ticker" role="status" id="sx1-ticker"></div>
+        <div class="sim-take"><strong>The lesson.</strong> Heads: +50%. Tails: −40%. Every flip has positive expected value — yet betting everything every time is near-certain ruin, because the ensemble average is carried by a handful of astronomically lucky paths you will not personally be on. What is true averaged across 400 parallel yous is not true for the one of you moving through time. Now slide the wager down and watch survival reappear: you have just invented the barbell, two books early.</div>
+      </div>
+    </div>
+
+    <div class="col">
+      <p>Randomness doesn't only fool us across careers; it fools us between breakfast and lunch. Taleb's happiest man is a retired dentist with a superb portfolio: 15% expected return, 10% volatility. Whether he is happy turns out to depend almost entirely on <em>how often he looks at it</em>.</p>
+    </div>
+
+    <div class="sim" id="sim3">
+      <div class="sim-panel">
+        <div class="sim-head">
+          <span class="sim-no">Sim 03</span>
+          <h3 class="sim-title">The dentist who looked too often</h3>
+          <span class="sim-book">Noise vs. signal</span>
+        </div>
+        <div class="sim-canvas-wrap"><canvas id="c3" aria-label="Simulation: one year of an excellent portfolio; choose how often to check it and see how many observations feel good versus bad, with losses weighted to hurt about twice as much as gains feel good."></canvas></div>
+        <div class="sim-deck">
+          <div class="ctl"><label>Check every</label><div class="seg" id="s3-freq" role="group" aria-label="Observation frequency"></div></div>
+          <div class="ctl"><label for="s3-pain">A loss hurts ×</label><input type="range" id="s3-pain" min="1" max="4" step="0.5" value="2"><output id="s3-pain-out">2.0</output></div>
+          <button class="btn" id="s3-new">Live a different year</button>
+        </div>
+        <div class="sim-stats">
+          <div class="stat"><span class="k">The year's return</span><span class="v amber" id="s3-final">–</span></div>
+          <div class="stat"><span class="k">Checks that felt good</span><span class="v green" id="s3-green">–</span></div>
+          <div class="stat"><span class="k">Checks that hurt</span><span class="v red" id="s3-red">–</span></div>
+          <div class="stat"><span class="k">P(green) per check</span><span class="v" id="s3-p">–</span></div>
+          <div class="stat"><span class="k">Net mood, year total</span><span class="v" id="s3-mood">–</span></div>
+        </div>
+        <div class="sim-ticker" role="status" id="s3-ticker"></div>
+        <div class="sim-take"><strong>The lesson.</strong> Same portfolio, same year, same ending — only the sampling changed. At a one-year horizon this strategy delivers joy 93% of the time; minute by minute it delivers a coin flip — 50.18% green — and since losses sting about twice as hard as gains soothe, high-frequency watching turns an excellent year into an emotional bloodbath. Noise dominates signal at short timescales — which is also Taleb's case against the news.</div>
+      </div>
+    </div>
+
+    <p class="aphorism">“It does not matter how frequently something succeeds, if failure is too costly to bear.”<span class="attr">Fooled by Randomness</span></p>
+  </section>
+
+  <section id="book-2">
+    <div class="col book-head">
+      <p class="volume">Volume II · 2007</p>
+      <h2>The Black Swan</h2>
+      <p class="epigraph">“History and societies do not crawl. They make jumps.”</p>
+      <hr>
+    </div>
+    <div class="col">
+      <p>A <span class="keyterm">Black Swan</span> has three properties: it lies outside what past data suggested was possible; it carries extreme consequences; and afterward, we manufacture explanations that make it seem predictable all along. Note what's missing from that definition: <em>bad</em>. Google and penicillin were Black Swans too. And note what's hiding in it: a Black Swan is relative to the observer — Thanksgiving is a catastrophic surprise to the turkey and a calendar entry to the butcher.</p>
+      <p>Before the swans, a word about where your probabilities come from. Taleb stages it as a quiz given to two characters: Dr.&nbsp;John, a meticulous quant, and Fat&nbsp;Tony, a Brooklyn operator with no patience for models. <em>A coin, assumed fair, has just landed heads 99 times in a row. What are the odds the next flip is tails?</em></p>
+    </div>
+
+    <div class="sim mini" id="simx2">
+      <div class="sim-panel">
+        <div class="sim-head">
+          <span class="sim-no">Interlude</span>
+          <h3 class="sim-title">Fat Tony's coin</h3>
+          <span class="sim-book">The ludic fallacy</span>
+        </div>
+        <div class="sim-canvas-wrap"><canvas id="cx2" aria-label="Chart comparing Dr. John's constant fifty percent answer with Fat Tony's rising posterior belief that a coin landing heads many times in a row must be rigged."></canvas></div>
+        <div class="sim-deck">
+          <div class="ctl"><label for="sx2-k">Heads in a row</label><input type="range" id="sx2-k" min="0" max="99" step="1" value="20"><output id="sx2-k-out">20</output></div>
+          <div class="ctl"><label for="sx2-prior">Rigged coins: 1 in</label><input type="range" id="sx2-prior" min="1" max="6" step="1" value="4"><output id="sx2-prior-out">10k</output></div>
+        </div>
+        <div class="sim-stats">
+          <div class="stat"><span class="k">Dr. John: P(next is heads)</span><span class="v">50% — “them's the rules”</span></div>
+          <div class="stat"><span class="k">Fat Tony: P(next is heads)</span><span class="v amber" id="sx2-ft">–</span></div>
+          <div class="stat"><span class="k">P(the game itself is rigged)</span><span class="v" id="sx2-post">–</span></div>
+        </div>
+        <div class="sim-ticker" role="status" id="sx2-ticker"></div>
+        <div class="sim-take"><strong>The lesson.</strong> Dr. John computes flawlessly <em>inside</em> the model; Fat Tony asks whether the model survived contact with the data. This is the <em>ludic fallacy</em>: treating real life like a casino game with knowable, stated odds. Outside casinos, the biggest risk is rarely a number inside your model — it's the model. A few dozen flips is all it should take to abandon one.</div>
+      </div>
+    </div>
+
+    <div class="col">
+      <p>Now the book's central animal. We'll do this properly, which means <em>you won't know which animal you are</em>. Below is a live data feed called Process&nbsp;X. It has paid out every single day since observation began. Your job is the job of every risk manager on earth: decide, from the data, how long to stay.</p>
+    </div>
+
+    <div class="sim" id="sim4">
+      <div class="sim-panel">
+        <div class="sim-head">
+          <span class="sim-no">Sim 04</span>
+          <h3 class="sim-title">Process X</h3>
+          <span class="sim-book">The problem of induction</span>
+        </div>
+        <div class="sim-canvas-wrap"><canvas id="c4" aria-label="A stopping game: a daily payout series that has never missed a day. Ride or cash out; the hidden truth is revealed when you stop."></canvas></div>
+        <div class="sim-deck">
+          <button class="btn primary" id="s4-ride">Ride 50 more days</button>
+          <button class="btn" id="s4-cash">Cash out</button>
+          <button class="btn" id="s4-reset" hidden>Start over</button>
+          <label class="toggle" id="s4-butcher-wrap" hidden><input type="checkbox" id="s4-butcher"> Switch to the butcher's seat</label>
+          <label class="toggle" id="s4-worldy-wrap" hidden><input type="checkbox" id="s4-worldy"> Replay in a constant-hazard world</label>
+        </div>
+        <div class="sim-stats">
+          <div class="stat"><span class="k">Days observed</span><span class="v" id="s4-days">–</span></div>
+          <div class="stat"><span class="k">Banked well-being</span><span class="v amber" id="s4-bank">–</span></div>
+          <div class="stat"><span class="k">Your model: P(paid tomorrow)</span><span class="v green" id="s4-model">–</span></div>
+          <div class="stat"><span class="k">Reality: P(paid tomorrow)</span><span class="v" id="s4-real">?</span></div>
+        </div>
+        <div class="sim-ticker" role="status" id="s4-ticker"></div>
+        <div class="sim-take"><strong>The lesson.</strong> This is Taleb's turkey, fed for a thousand days and slaughtered the day its statistical confidence peaks. The sinister part isn't the surprise — it's that every safe day made the model <em>more</em> certain, so risk was greatest exactly when the data looked best. Banks that “never lost a dollar” are turkeys mid-feeding. And the fix isn't to distrust all data: replay in the constant-hazard world and induction works fine. The turkey's error was ontological — it estimated the odds of a coin that was actually a calendar. A Black Swan is a property of your model of the world, not of the world.</div>
+      </div>
+    </div>
+
+    <div class="col">
+      <p>And after the axe falls? We explain it. Fluently, instantly, in whichever direction the corpse happens to be lying — the third property of the Black Swan is that hindsight will insist it was foreseeable. Try it yourself. The market below just did <em>that</em>. Why?</p>
+    </div>
+
+    <div class="sim mini" id="simx3">
+      <div class="sim-panel">
+        <div class="sim-head">
+          <span class="sim-no">Interlude</span>
+          <h3 class="sim-title">The headline machine</h3>
+          <span class="sim-book">The narrative fallacy</span>
+        </div>
+        <div class="sim-canvas-wrap"><canvas id="cx3" aria-label="A price chart ending in a dramatic move. Choose the headline that explains it; the reveal shows the chart is pure noise and the same headline attached to its mirror image."></canvas></div>
+        <div class="choice-row" id="sx3-choices">
+          <button class="btn" data-h="0">“Markets reprice as the Fed's signals finally sink in”</button>
+          <button class="btn" data-h="1">“Earnings season reveals the sector's true health”</button>
+          <button class="btn" data-h="2">“Geopolitical tension drives investors to act”</button>
+        </div>
+        <div class="sim-deck" id="sx3-deck" hidden>
+          <button class="btn" id="sx3-again">Deal another chart</button>
+        </div>
+        <div class="sim-ticker" role="status" id="sx3-ticker">Pick the headline that best explains the move.</div>
+        <div class="sim-take"><strong>The lesson.</strong> The chart is seeded coin flips; so is its mirror, and your headline reads just as convincingly under either. An explanation that fits any outcome explains none of them. This is the <em>narrative fallacy</em> — the compulsion that makes Black Swans look predictable in the rearview mirror, and keeps us buying tomorrow's explanations of yesterday's noise.</div>
+      </div>
+    </div>
+
+    <div class="col">
+      <p>Why do turkeys and traders keep getting away with it — right up until they don't? Because there are two species of randomness, and we keep using the statistics of one in the territory of the other. Taleb names them like countries. In <span class="keyterm">Mediocristan</span>, no single observation can meaningfully move the total: collect a thousand people and even the heaviest human alive barely nudges the average weight. In <span class="keyterm">Extremistan</span>, one observation <em>is</em> the total: add one particular founder to your sample of a thousand net worths and he is 99% of it. Height, calories, dentistry income live in the first country. Wealth, book sales, war deaths, market returns live in the second — and almost everything modern, scalable, and interesting has emigrated there.</p>
+    </div>
+
+    <div class="sim" id="sim5">
+      <div class="sim-panel">
+        <div class="sim-head">
+          <span class="sim-no">Sim 05</span>
+          <h3 class="sim-title">Two countries</h3>
+          <span class="sim-book">Mediocristan vs. Extremistan</span>
+        </div>
+        <div class="sim-canvas-wrap"><canvas id="c5" aria-label="Top: two thousand sampled heights clustered in a bell. Bottom: two thousand sampled net worths dominated by a few individuals; buttons inject extreme newcomers. A markets mode shows fifty years of returns with and without the ten best days."></canvas></div>
+        <div class="sim-deck">
+          <div class="ctl"><label>Domain</label><div class="seg" id="s5-mode" role="group" aria-label="Domain"><button type="button" class="on" aria-pressed="true">People</button><button type="button" aria-pressed="false">Market days</button></div></div>
+          <span id="s5-ctl-people" style="display:contents">
+            <div class="ctl"><label for="s5-alpha">Wealth tail α</label><input type="range" id="s5-alpha" min="1.1" max="3" step="0.05" value="1.3"><output id="s5-alpha-out">1.30</output></div>
+            <button class="btn" id="s5-tall">+ tallest human ever (2.72 m)</button>
+            <button class="btn" id="s5-bezos">+ one centibillionaire ($200B)</button>
+            <button class="btn" id="s5-resample">Resample 2,000</button>
+          </span>
+          <span id="s5-ctl-markets" style="display:none">
+            <div class="ctl"><label>Days counted</label><div class="seg" id="s5-days" role="group" aria-label="Days counted"><button type="button" class="on" aria-pressed="true">All 12,600</button><button type="button" aria-pressed="false">Drop 10 best</button><button type="button" aria-pressed="false">Drop 10 worst</button></div></div>
+            <button class="btn" id="s5-reroll">New half-century</button>
+          </span>
+        </div>
+        <div class="sim-stats" id="s5-stats-people">
+          <div class="stat"><span class="k">Tallest person's share of all height</span><span class="v" id="s5-hshare">–</span></div>
+          <div class="stat"><span class="k">Richest person's share of all wealth</span><span class="v amber" id="s5-wshare">–</span></div>
+          <div class="stat"><span class="k">Newcomer moved mean height by</span><span class="v" id="s5-hmove">–</span></div>
+          <div class="stat"><span class="k">Newcomer moved mean wealth by</span><span class="v" id="s5-wmove">–</span></div>
+        </div>
+        <div class="sim-stats" id="s5-stats-markets" hidden>
+          <div class="stat"><span class="k">Gaussistan, 50 yrs</span><span class="v" id="s5-g-full">–</span></div>
+          <div class="stat"><span class="k">Gaussistan, filtered</span><span class="v" id="s5-g-cut">–</span></div>
+          <div class="stat"><span class="k">Extremistan, 50 yrs</span><span class="v amber" id="s5-e-full">–</span></div>
+          <div class="stat"><span class="k">Extremistan, filtered</span><span class="v" id="s5-e-cut">–</span></div>
+          <div class="stat"><span class="k">Biggest single day (Extremistan)</span><span class="v" id="s5-e-max">–</span></div>
+        </div>
+        <div class="sim-ticker" role="status" id="s5-ticker"></div>
+        <div class="sim-take"><strong>The lesson.</strong> In Mediocristan the tallest man ever moves your average by a rounding error; in Extremistan one newcomer swallows the sample whole — the mean, the standard deviation, and every Gaussian tool quietly stop meaning anything. Applying bell-curve statistics there is what Taleb calls the Great Intellectual Fraud. Switch to Market days for the same point in time: in the fat-tailed market, a handful of days out of 12,600 carry most of half a century — miss them, or suffer them, and the “average” tells you nothing about your fate.</div>
+      </div>
+    </div>
+
+    <div class="col">
+      <p>Extremistan has a predator perfectly adapted to it: the strategy that earns small, steady, Sharpe-ratio-polishing profits by quietly selling insurance against the rare event. Taleb traded next to these people for years. Their track records are gorgeous — smoothness is the <em>product</em> — and the risk sits exactly where the data isn't. Two funds are auditioning for your savings. Study the five-year records. Commit.</p>
+    </div>
+
+    <div class="sim" id="sim6">
+      <div class="sim-panel">
+        <div class="sim-head">
+          <span class="sim-no">Sim 06</span>
+          <h3 class="sim-title">The blowup artist</h3>
+          <span class="sim-book">Hidden risk · skin in the game</span>
+        </div>
+        <div class="sim-canvas-wrap"><canvas id="c6" aria-label="Two five-year fund track records to choose between; after committing, one thousand alternative ten-year futures reveal that the smoother fund carries a hidden catastrophic tail."></canvas></div>
+        <div class="sim-deck">
+          <button class="btn primary" id="s6-a">Invest with Fund A</button>
+          <button class="btn primary" id="s6-b">Invest with Fund B</button>
+          <button class="btn" id="s6-reset" hidden>Start over</button>
+          <label class="toggle" id="s6-mgr-wrap" hidden><input type="checkbox" id="s6-mgr"> Show B's manager's personal account</label>
+        </div>
+        <div class="sim-stats">
+          <div class="stat"><span class="k">Sharpe, 5-yr audition</span><span class="v" id="s6-sharpe">–</span></div>
+          <div class="stat"><span class="k">Arithmetic edge, both funds</span><span class="v" id="s6-ev">≈ +0.6%/mo</span></div>
+          <div class="stat"><span class="k">P(B blows up in 10 yrs)</span><span class="v red" id="s6-pblow">63%</span></div>
+          <div class="stat"><span class="k">Your 10-yr outcome</span><span class="v" id="s6-you">–</span></div>
+        </div>
+        <div class="sim-ticker" role="status" id="s6-ticker">The brochures are printed. Choose a fund.</div>
+        <div class="sim-take"><strong>The lesson.</strong> Fund B's smooth line isn't the absence of risk; it's the <em>price</em> of hidden risk, collected monthly until the 1-in-120 event arrives (63% likely inside a decade — and, by construction, both funds carry the same arithmetic edge; B has merely repackaged it with hidden skew). Worse: sample skewness hides the skew — most 5-year windows genuinely contain no crash, so the data honestly looks clean. That's why the reveal runs 1,000 futures instead of trusting one. And the Bob Rubin twist: B's manager banks his bonuses annually, so across the very futures where clients are craterized, the manager stays rich. No skin in the game — the asymmetry that turns hidden tails into a business model.</div>
+      </div>
+    </div>
+
+    <p class="aphorism">“The inability to predict outliers implies the inability to predict the course of history.”<span class="attr">The Black Swan</span></p>
+  </section>
+
+  <section id="book-3">
+    <div class="col book-head">
+      <p class="volume">Volume III · 2012</p>
+      <h2>Antifragile</h2>
+      <p class="epigraph">“Wind extinguishes a candle and energizes fire.”</p>
+      <hr>
+    </div>
+    <div class="col">
+      <p>Two books of diagnosis; now the prescription. Taleb's starting move is to point out that our vocabulary is missing a word. The opposite of <em>fragile</em> is not <em>robust</em> — the robust merely ignores disorder. The true opposite is something that <span class="keyterm">gains</span> from disorder: stressed muscles, tinkered technologies, small restaurants, evolution itself. He has to coin the word: <span class="keyterm">antifragile</span>.</p>
+      <p>The deep idea is that fragility is <em>measurable</em> even when events aren't predictable — it's just curvature. If harm accelerates as shocks get bigger (concave), volatility hurts you on average. If gains accelerate (convex), volatility feeds you. No forecasting required: you can inspect the curve you're standing on. The machine below shakes three objects with <em>identical, fair, zero-mean</em> turbulence.</p>
+    </div>
+
+    <div class="sim" id="sim7">
+      <div class="sim-panel">
+        <div class="sim-head">
+          <span class="sim-no">Sim 07</span>
+          <h3 class="sim-title">The shake table</h3>
+          <span class="sim-book">Fragile · robust · antifragile</span>
+        </div>
+        <div class="sim-canvas-wrap"><canvas id="c7" aria-label="Three objects — a teacup, an anvil, and a hydra — subjected to identical zero-mean shocks. The concave teacup drifts down and can shatter; the linear anvil stays flat; the convex hydra gains."></canvas></div>
+        <div class="sim-deck">
+          <div class="ctl"><label for="s7-vol">Volatility</label><input type="range" id="s7-vol" min="0.5" max="4" step="0.25" value="1.5"><output id="s7-vol-out">1.5</output></div>
+          <div class="ctl"><label>Schedule</label><div class="seg" id="s7-sched" role="group" aria-label="Shock schedule"><button type="button" class="on" aria-pressed="true">Steady drizzle ×400</button><button type="button" aria-pressed="false">Rare storms ×25</button></div></div>
+          <button class="btn" id="s7-run">Release the shocks</button>
+        </div>
+        <div class="sim-stats">
+          <div class="stat"><span class="k">Teacup (concave)</span><span class="v" id="s7-cup">–</span></div>
+          <div class="stat"><span class="k">Anvil (linear)</span><span class="v" id="s7-anvil">–</span></div>
+          <div class="stat"><span class="k">Hydra (convex)</span><span class="v" id="s7-hydra">–</span></div>
+          <div class="stat"><span class="k">Shock distribution mean</span><span class="v">0 — by design</span></div>
+        </div>
+        <div class="sim-ticker" role="status" id="s7-ticker"></div>
+        <div class="sim-take"><strong>The lesson.</strong> Same shocks, three fates — the difference is nothing but curvature, which is Jensen's inequality wearing work clothes: for the convex, the average of outcomes beats the outcome of the average. Note the schedule toggle: both schedules carry <em>exactly</em> the same total turbulence, but concentrating it into rare storms is what shatters the teacup — fragility is, precisely, sensitivity to the big-and-rare rather than the frequent-and-small. And the hydra's gains cap out: even antifragility has a neck. To know which object you are, you don't need to predict the earthquake — only to look down at your own curve.</div>
+      </div>
+    </div>
+
+    <div class="col">
+      <p>How do you <em>buy</em> convexity? Taleb's favorite instrument is as old as philosophy: Thales, mocked for his poverty, put a small deposit on every olive press in Miletus and Chios before one abundant harvest — losing at most the deposit, positioned to win enormously. The <span class="keyterm">option</span>: bounded downside, open upside. You pay a steady, visible premium; you collect on the wild day.</p>
+      <p>Which yields Taleb's portfolio for a world you cannot predict: the <span class="keyterm">barbell</span>. Not the balanced, respectable, “moderate risk” middle — remember Fund B; the middle is where hidden fragility lives, because its risk is estimated by models that fail exactly when it matters. Instead: put 85–90% in the safest, most boring thing you can find, and 10–15% in maximally convex bets. Your worst case becomes knowable; your best case stays unbounded. One knob below controls how wild the world is. Watch who survives it — and be honest about the calm years too.</p>
+    </div>
+
+    <div class="sim" id="sim8">
+      <div class="sim-panel">
+        <div class="sim-head">
+          <span class="sim-no">Sim 08</span>
+          <h3 class="sim-title">Build your barbell</h3>
+          <span class="sim-book">The finale</span>
+        </div>
+        <div class="sim-canvas-wrap"><canvas id="c8" aria-label="Three hundred simulated twenty-year futures for a portfolio you allocate between safe bonds, a moderate-risk middle, and wild convex bets, under an adjustable crash frequency."></canvas></div>
+        <div class="sim-deck">
+          <div class="ctl"><label for="s8-mid">Middle %</label><input type="range" id="s8-mid" min="0" max="100" step="5" value="100"><output id="s8-mid-out">100</output></div>
+          <div class="ctl"><label for="s8-wild">Wild %</label><input type="range" id="s8-wild" min="0" max="100" step="5" value="0"><output id="s8-wild-out">0</output></div>
+          <div class="ctl"><label for="s8-p">Crash odds /yr</label><input type="range" id="s8-p" min="0" max="15" step="1" value="5"><output id="s8-p-out">5%</output></div>
+          <button class="btn" id="s8-preset-mid">All middle</button>
+          <button class="btn primary" id="s8-preset-bar">90/10 barbell</button>
+          <button class="btn" id="s8-preset-wild">All wild</button>
+          <button class="btn" id="s8-storms">New storms</button>
+        </div>
+        <div class="sim-stats">
+          <div class="stat"><span class="k">Your allocation S/M/W</span><span class="v" id="s8-alloc">–</span></div>
+          <div class="stat"><span class="k">Your median, 20 yrs</span><span class="v amber" id="s8-med">–</span></div>
+          <div class="stat"><span class="k">Your worst 5%</span><span class="v" id="s8-p5">–</span></div>
+          <div class="stat"><span class="k">P(lose half or more)</span><span class="v" id="s8-ruin">–</span></div>
+          <div class="stat"><span class="k">All-middle median</span><span class="v" id="s8-bmid">–</span></div>
+          <div class="stat"><span class="k">90/10 barbell median</span><span class="v" id="s8-bbar">–</span></div>
+        </div>
+        <div class="sim-ticker" role="status" id="s8-ticker"></div>
+        <div class="sim-take"><strong>The lesson.</strong> Drag the crash odds to zero and admit what you see: the barbell <em>loses</em> to the middle, steadily — antifragility is insurance, and insurance costs premium. The case for the barbell is not that it always wins; it's that its worst case is chosen by you (the safe floor) while the middle's worst case is chosen by a model — and the crash-odds knob you just turned is, in reality, a number nobody knows. The same storms replay identically for every allocation you try: same world, different shape. All-wild, meanwhile, is a lottery ticket mistaken for a portfolio — convexity works in a sleeve, rebalanced, never as the whole body. Fragility asks you to be right about the future; the barbell only asks you to be honest about your ignorance of it.</div>
+      </div>
+    </div>
+
+    <p class="aphorism">“It is far easier to figure out if something is fragile than to predict the occurrence of an event that may harm it.”<span class="attr">Antifragile</span></p>
+  </section>
+
+  <div class="coda">
+    <div class="col">
+      <h2>The Incerto, in one breath</h2>
+      <p>The world that matters is Extremistan, where a handful of jumps outweigh decades of crawl (Vol. II) — so the track records you admire are mostly survivorship and the smoothness you trust is mostly unexploded risk (Vol. I). You cannot predict the jumps; you can only choose your curvature before they arrive (Vol. III). Clip your left tail, keep a cheap open right tail, and let time — the only honest statistician — do the sorting.</p>
+      <p class="fine">Which is also why these books have aged the way they have. Taleb's own rule for that:</p>
+    </div>
+
+    <div class="sim mini" id="simx4">
+      <div class="sim-panel">
+        <div class="sim-head">
+          <span class="sim-no">Postscript</span>
+          <h3 class="sim-title">The Lindy effect</h3>
+          <span class="sim-book">Antifragile, ch. 20</span>
+        </div>
+        <div class="sim-canvas-wrap"><canvas id="cx4" aria-label="Chart comparing expected remaining lifespan for perishable things, which declines with age, and for ideas and books, which grows with age."></canvas></div>
+        <div class="sim-deck">
+          <div class="ctl"><label for="sx4-age">Survived so far</label><input type="range" id="sx4-age" min="1" max="100" step="1" value="25"><output id="sx4-age-out">25 yrs</output></div>
+        </div>
+        <div class="sim-stats">
+          <div class="stat"><span class="k">A 25-year-old human, expected remaining</span><span class="v" id="sx4-h">–</span></div>
+          <div class="stat"><span class="k">A 25-year-old book, expected remaining</span><span class="v amber" id="sx4-b">–</span></div>
+        </div>
+        <div class="sim-ticker" role="status" id="sx4-ticker"></div>
+        <div class="sim-take"><strong>The lesson.</strong> Perishables age toward death; the non-perishable — books, ideas, technologies — age <em>away</em> from it: every year survived is evidence of robustness, so expected remaining life grows with age. <em>Fooled by Randomness</em> is twenty-five years old this year. Lindy says: plan on it outliving most things published this morning.</div>
+      </div>
+    </div>
+
+    <div class="col">
+      <p class="fine">Every number on this page was generated in your browser while you read — seeded Monte Carlo, no data, no server (with one exception: your own trigger pulls in Sim 02 are unseeded and unrepeatable, which seems only fair). Press the re-run buttons: the specifics will come out different, because that is the entire point. If the lessons come out different too, that would be the most Talebian result of all.</p>
+      <p class="fine">The books, in reading order: <em>Fooled by Randomness</em> (2001) · <em>The Black Swan</em> (2007) · <em>Antifragile</em> (2012) — with <em>The Bed of Procrustes</em> (2010) and <em>Skin in the Game</em> (2018) completing the Incerto. This page is a homage and a toy, not a substitute: the books contain the parts that cannot be simulated.</p>
+    </div>
+  </div>
+
+</main>
+
+<script>
+'use strict';
+/* ================= shared utilities ================= */
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function randn(rng) { // Box-Muller
+  let u = 0, v = 0;
+  while (u === 0) u = rng();
+  while (v === 0) v = rng();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+function pareto(rng, alpha, xm) { return xm / Math.pow(1 - rng(), 1 / alpha); }
+function normCdf(z) { // Abramowitz-Stegun 7.1.26 via erf
+  const t = 1 / (1 + 0.3275911 * Math.abs(z) / Math.SQRT2);
+  const e = 1 - t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429)))) * Math.exp(-(z * z) / 2);
+  return z >= 0 ? 0.5 * (1 + e) : 0.5 * (1 - e);
+}
+function fmt(n, d = 0) {
+  return n.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+}
+function fmtMoney(n) {
+  const a = Math.abs(n);
+  if (a >= 1e12) return '$' + fmt(n / 1e12, 2) + 'T';
+  if (a >= 1e9) return '$' + fmt(n / 1e9, 2) + 'B';
+  if (a >= 1e6) return '$' + fmt(n / 1e6, 2) + 'M';
+  if (a >= 1e4) return '$' + fmt(n / 1e3, 0) + 'k';
+  return '$' + fmt(n, 0);
+}
+const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* wire a range input to an output readout; returns getter */
+function bindRange(inputId, outputId, format, onChange) {
+  const inp = document.getElementById(inputId);
+  const out = document.getElementById(outputId);
+  const update = () => {
+    const label = String(format(Number(inp.value)));
+    out.textContent = label;
+    inp.setAttribute('aria-valuetext', label);
+  };
+  inp.addEventListener('input', () => { update(); onChange(Number(inp.value)); });
+  update();
+  return () => Number(inp.value);
+}
+
+/* DPR-aware canvas that re-renders on resize */
+function makeCanvas(canvas, heightFor, render) {
+  const ctx = canvas.getContext('2d');
+  let w = 0, h = 0;
+  function resize() {
+    const cssW = canvas.clientWidth || canvas.parentElement.clientWidth;
+    const cssH = heightFor(cssW);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const bw = Math.round(cssW * dpr), bh = Math.round(cssH * dpr);
+    if (cssW === w && canvas.width === bw && canvas.height === bh) return;
+    if (canvas.style.height !== cssH + 'px') canvas.style.height = cssH + 'px';
+    canvas.width = bw;
+    canvas.height = bh;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    w = cssW; h = cssH;
+    render(ctx, w, h);
+  }
+  const ro = new ResizeObserver(() => resize());
+  ro.observe(canvas);
+  resize();
+  return { ctx, size: () => ({ w, h }), redraw: () => render(ctx, w, h), resize };
+}
+
+/* run an animation loop only while the element is on screen */
+function whenVisible(el, onVisible, onHidden) {
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (e.isIntersecting) onVisible(); else if (onHidden) onHidden();
+    }
+  }, { threshold: 0.05 });
+  io.observe(el);
+}
+
+/* ================= hero: the lucky fool ================= */
+(function heroSim() {
+  const canvas = document.getElementById('hero-canvas');
+  const luckyEl = document.getElementById('hero-lucky');
+  const N = 400, YEARS = 12, STEPS = YEARS * 12; // monthly coin flips
+  let paths = [], best = 0, seed = 20260703;
+
+  function build() {
+    const rng = mulberry32(seed);
+    paths = [];
+    best = 0;
+    let bestEnd = -Infinity;
+    for (let i = 0; i < N; i++) {
+      const p = new Float32Array(STEPS + 1);
+      let v = 0;
+      p[0] = 0;
+      for (let t = 1; t <= STEPS; t++) {
+        v += (rng() < 0.5 ? -1 : 1) * (0.8 + rng() * 1.4);
+        p[t] = v;
+      }
+      paths.push(p);
+      if (v > bestEnd) { bestEnd = v; best = i; }
+    }
+    const winPct = Math.round(50 + bestEnd / (STEPS * 1.4) * 50);
+    luckyEl.textContent = 'the "genius": +' + fmt(bestEnd * 0.9, 0) + '% over ' + YEARS + ' yrs';
+  }
+  build();
+
+  let progress = REDUCED ? 1 : 0;
+  const cv = makeCanvas(canvas,
+    (w) => Math.max(380, Math.min(640, window.innerHeight * 0.62)),
+    draw);
+
+  function draw(ctx, w, h) {
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = '#14161C';
+    ctx.fillRect(0, 0, w, h);
+    // faint gridlines
+    ctx.strokeStyle = 'rgba(42,46,58,0.6)';
+    ctx.lineWidth = 1;
+    for (let i = 1; i < 6; i++) {
+      const y = (h / 6) * i;
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+    }
+    let lo = Infinity, hi = -Infinity;
+    for (const p of paths) for (let t = 0; t <= STEPS; t++) { if (p[t] < lo) lo = p[t]; if (p[t] > hi) hi = p[t]; }
+    const pad = 30;
+    const X = t => (t / STEPS) * w;
+    const Y = v => pad + (1 - (v - lo) / (hi - lo)) * (h - 2 * pad);
+    const upto = Math.max(2, Math.floor(progress * STEPS));
+
+    for (let i = 0; i < paths.length; i++) {
+      if (i === best) continue;
+      ctx.beginPath();
+      ctx.strokeStyle = 'rgba(126,133,152,0.10)';
+      ctx.lineWidth = 1;
+      const p = paths[i];
+      ctx.moveTo(X(0), Y(p[0]));
+      for (let t = 1; t <= upto; t++) ctx.lineTo(X(t), Y(p[t]));
+      ctx.stroke();
+    }
+    // the lucky one
+    const p = paths[best];
+    ctx.beginPath();
+    ctx.strokeStyle = '#F0B24A';
+    ctx.lineWidth = 2.2;
+    ctx.shadowColor = 'rgba(240,178,74,0.55)';
+    ctx.shadowBlur = 10;
+    ctx.moveTo(X(0), Y(p[0]));
+    for (let t = 1; t <= upto; t++) ctx.lineTo(X(t), Y(p[t]));
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+    if (upto >= 2) {
+      ctx.fillStyle = '#F0B24A';
+      ctx.beginPath();
+      ctx.arc(X(upto), Y(p[upto]), 3.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  if (!REDUCED) {
+    let playing = false, raf = null, hold = null;
+    function tick() {
+      progress = Math.min(1, progress + 0.0028);
+      cv.redraw();
+      if (progress < 1) { raf = requestAnimationFrame(tick); }
+      else {
+        // hold, reseed, restart
+        hold = setTimeout(() => { hold = null; seed += 1; build(); progress = 0; if (playing) raf = requestAnimationFrame(tick); }, 4200);
+      }
+    }
+    whenVisible(canvas,
+      () => { if (!playing) { playing = true; raf = requestAnimationFrame(tick); } },
+      () => {
+        playing = false;
+        if (raf) cancelAnimationFrame(raf); raf = null;
+        if (hold) clearTimeout(hold); hold = null;
+      });
+  }
+})();
+</script>
+<script>
+'use strict';
+const MONO = "ui-monospace,'SF Mono',Menlo,Consolas,monospace";
+function short(n) {
+  if (n >= 1e6) return fmt(n / 1e6, 1) + 'M';
+  if (n >= 10000) return fmt(Math.round(n / 1000)) + 'k';
+  return fmt(n);
+}
+function binom(rng, n, p) {
+  if (n <= 0) return 0;
+  if (n < 4000) { let s = 0; for (let i = 0; i < n; i++) if (rng() < p) s++; return s; }
+  const m = n * p, sd = Math.sqrt(n * p * (1 - p));
+  return Math.max(0, Math.min(n, Math.round(m + sd * randn(rng))));
+}
+
+/* ================= SIM 01: the coin-flip funds ================= */
+(function sim01() {
+  const NS = [100, 1000, 10000, 100000];
+  const canvas = document.getElementById('c1');
+  let seed = 11, N = 10000, Y = 10, grave = false, skill = false;
+  let luckCounts = [N], skillCounts = [0], reveal = Y;
+
+  function simulate() {
+    const rng = mulberry32(seed);
+    const nSkill = skill ? Math.round(N * 0.1) : 0;
+    let ls = N - nSkill, ss = nSkill;
+    luckCounts = [ls]; skillCounts = [ss];
+    for (let k = 1; k <= Y; k++) {
+      ls = binom(rng, ls, 0.5);
+      ss = binom(rng, ss, 0.6);
+      luckCounts.push(ls); skillCounts.push(ss);
+    }
+    updateStats();
+  }
+
+  function updateStats() {
+    const lucky = luckCounts[Y], skilled = skillCounts[Y], total = lucky + skilled;
+    document.getElementById('s1-surv').textContent = fmt(total);
+    const exp = skill
+      ? 0.9 * N * Math.pow(0.5, Y) + 0.1 * N * Math.pow(0.6, Y)
+      : N * Math.pow(0.5, Y);
+    document.getElementById('s1-exp-k').textContent = skill ? 'Expected perfect records' : 'Expected by pure chance';
+    document.getElementById('s1-exp').textContent = exp >= 10 ? fmt(exp) : fmt(exp, 1);
+    const kEl = document.getElementById('s1-p1-k'), vEl = document.getElementById('s1-p1');
+    if (!skill) {
+      kEl.textContent = 'P(at least one “genius”)';
+      const p1 = 1 - Math.pow(1 - Math.pow(0.5, Y), N);
+      vEl.textContent = p1 > 0.9999 ? '>99.99%' : fmt(p1 * 100, p1 > 0.9 ? 2 : 1) + '%';
+    } else {
+      kEl.textContent = 'P(a perfect record = skill)';
+      const post = 0.1 * Math.pow(0.6, Y) / (0.1 * Math.pow(0.6, Y) + 0.9 * Math.pow(0.5, Y));
+      vEl.textContent = fmt(post * 100, 1) + '%';
+    }
+    document.getElementById('s1-dead').textContent = fmt(N - total);
+    const t = document.getElementById('s1-ticker');
+    if (total === 0) {
+      t.innerHTML = 'This cohort was too small to manufacture a genius. The real industry solves that problem by <b>having more funds</b>.';
+    } else if (skill) {
+      const pctLuck = fmt(lucky / total * 100, 0);
+      t.innerHTML = 'Of the <b>' + fmt(total) + '</b> perfect records, <span class="g">' + fmt(skilled) + ' belong to genuinely skilled managers</span> — but <b>' + pctLuck + '%</b> of the flawless streaks are still just coins wearing suits.';
+    } else if (grave) {
+      t.innerHTML = 'The <b>' + fmt(total) + '</b> “visionaries” are standing on <span class="r">' + fmt(N - total) + ' closed funds</span> you will never read about.';
+    } else {
+      t.innerHTML = '<b>' + fmt(total) + '</b> managers have now beaten the market <b>' + Y + ' years running</b>. The financial press is calling them visionaries.';
+    }
+  }
+
+  const cv = makeCanvas(canvas, w => Math.max(250, Math.min(380, w * 0.42)), draw);
+  function draw(ctx, w, h) {
+    ctx.fillStyle = '#14161C'; ctx.fillRect(0, 0, w, h);
+    const padL = 14, padR = 14, topPad = 30;
+    const baseY = h * 0.62;
+    const cols = Y + 1, colW = (w - padL - padR) / cols;
+    const side0 = Math.min(colW * 0.82, baseY - topPad);
+    ctx.textAlign = 'center';
+    ctx.strokeStyle = 'rgba(42,46,58,0.9)';
+    ctx.beginPath(); ctx.moveTo(padL, baseY + 0.5); ctx.lineTo(w - padR, baseY + 0.5); ctx.stroke();
+    for (let k = 0; k <= Math.min(reveal, Y); k++) {
+      const total = luckCounts[k] + skillCounts[k];
+      const cx = padL + colW * k + colW / 2;
+      const side = total > 0 ? Math.max(3, side0 * Math.sqrt(total / N)) : 0;
+      if (side > 0) {
+        const skH = side * (total > 0 ? skillCounts[k] / total : 0);
+        ctx.fillStyle = k === Y ? '#F0B24A' : 'rgba(240,178,74,0.7)';
+        ctx.fillRect(cx - side / 2, baseY - side, side, side - skH);
+        if (skH > 0.5) {
+          ctx.fillStyle = k === Y ? '#5CB98B' : 'rgba(92,185,139,0.7)';
+          ctx.fillRect(cx - side / 2, baseY - skH, side, skH);
+        }
+      }
+      ctx.font = '10px ' + MONO;
+      const showLabel = colW >= 40 || k % 2 === 0;
+      if (showLabel) {
+        ctx.fillStyle = '#9BA2B3';
+        ctx.fillText(short(total), cx, baseY - side - 6);
+        ctx.fillStyle = '#8B93A7';
+        ctx.fillText(k === 0 ? 'start' : 'yr ' + k, cx, baseY + 14);
+      }
+      if (grave && k > 0) {
+        const dead = N - total;
+        if (dead > 0) {
+          const ds = side0 * Math.sqrt(dead / N);
+          const gh = Math.max(2, Math.min(ds, h - baseY - 46));
+          ctx.fillStyle = 'rgba(201,58,43,0.28)';
+          ctx.fillRect(cx - ds / 2, baseY + 22, ds, gh);
+          if (showLabel) {
+            ctx.fillStyle = 'rgba(228,82,63,0.75)';
+            ctx.fillText(short(dead), cx, baseY + 22 + gh + 12);
+          }
+        }
+      }
+    }
+    if (Math.min(reveal, Y) === Y) {
+      const total = luckCounts[Y] + skillCounts[Y];
+      if (total > 0) {
+        const cx = Math.min(padL + colW * Y + colW / 2, w - padR - 38);
+        const side = Math.max(3, side0 * Math.sqrt(total / N));
+        ctx.fillStyle = '#F0B24A'; ctx.font = 'italic 11px Georgia,serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('the geniuses', cx, baseY - side - 20);
+      }
+    }
+  }
+
+  let timer = null;
+  function animate() {
+    if (timer) { clearInterval(timer); timer = null; }
+    if (REDUCED) { reveal = Y; cv.redraw(); return; }
+    reveal = 0; cv.redraw();
+    timer = setInterval(() => {
+      reveal++;
+      cv.redraw();
+      if (reveal >= Y) { clearInterval(timer); timer = null; }
+    }, 300);
+  }
+
+  bindRange('s1-n', 's1-n-out', v => fmt(NS[v]), v => { N = NS[v]; simulate(); animate(); });
+  bindRange('s1-y', 's1-y-out', v => v, v => { Y = v; simulate(); animate(); });
+  document.getElementById('s1-grave').addEventListener('change', e => { grave = e.target.checked; updateStats(); cv.redraw(); });
+  document.getElementById('s1-skill').addEventListener('change', e => { skill = e.target.checked; simulate(); animate(); });
+  document.getElementById('s1-run').addEventListener('click', () => { seed++; simulate(); animate(); });
+
+  simulate();
+  cv.redraw();
+  let started = false;
+  whenVisible(canvas, () => { if (!started) { started = true; animate(); } });
+})();
+
+/* ================= INTERLUDE: the ergodicity coin ================= */
+(function simCoin() {
+  const canvas = document.getElementById('cx1');
+  const P = 400, T = 100, START = 100;
+  let seed = 303, f = 1.0;
+  let paths = [], medianPath = [];
+
+  function simulate() {
+    const rng = mulberry32(seed);
+    paths = [];
+    for (let i = 0; i < P; i++) {
+      const p = new Float64Array(T + 1);
+      p[0] = START;
+      for (let t = 1; t <= T; t++) {
+        p[t] = p[t - 1] * (rng() < 0.5 ? 1 + 0.5 * f : 1 - 0.4 * f);
+      }
+      paths.push(p);
+    }
+    medianPath = [];
+    const tmp = new Float64Array(P);
+    for (let t = 0; t <= T; t++) {
+      for (let i = 0; i < P; i++) tmp[i] = paths[i][t];
+      tmp.sort();
+      medianPath.push((tmp[P / 2 - 1] + tmp[P / 2]) / 2);
+    }
+    updateStats();
+  }
+
+  function updateStats() {
+    const g = 0.5 * Math.log(1 + 0.5 * f) + 0.5 * Math.log(1 - 0.4 * f);
+    const gPct = (Math.exp(g) - 1) * 100;
+    const gEl = document.getElementById('sx1-g');
+    gEl.textContent = (gPct >= 0 ? '+' : '') + fmt(gPct, 2) + '%';
+    gEl.className = 'v ' + (gPct >= 0 ? 'green' : 'red');
+    let above = 0, sum = 0, max = 0;
+    for (const p of paths) {
+      const v = p[T];
+      if (v > START) above++;
+      sum += v;
+      if (v > max) max = v;
+    }
+    document.getElementById('sx1-above').textContent = fmt(above) + ' / ' + fmt(P);
+    document.getElementById('sx1-top').textContent = fmt(max / sum * 100, 1) + '%';
+    const med = medianPath[T];
+    document.getElementById('sx1-ticker').innerHTML =
+      'Mean of all 400 wallets: <b>' + fmtMoney(sum / P) + '</b> (theory says ' + fmtMoney(START * Math.pow(1 + 0.05 * f, T)) + '). Median wallet: <span class="' + (med >= START ? 'g' : 'r') + '">' + fmtMoney(med) + '</span>. Averages are not destinies.';
+  }
+
+  const LOGLO = Math.log10(0.01);
+  const cv = makeCanvas(canvas, w => Math.max(240, Math.min(340, w * 0.42)), draw);
+  function draw(ctx, w, h) {
+    ctx.fillStyle = '#14161C'; ctx.fillRect(0, 0, w, h);
+    const padL = 52, padR = 14, padT = 16, padB = 26;
+    const cw = w - padL - padR, ch = h - padT - padB;
+    let hi = Math.log10(START * Math.pow(1 + 0.05 * f, T));
+    for (const p of paths) { const m = Math.log10(Math.max(p[T], 1e-3)); if (m > hi) hi = m; }
+    for (const p of paths) for (let t = 0; t <= T; t += 10) { const m = Math.log10(Math.max(p[t], 1e-3)); if (m > hi) hi = m; }
+    hi = Math.max(hi, 3);
+    const lo = LOGLO;
+    const X = t => padL + t / T * cw;
+    const Yv = v => Math.max(padT - 4, padT + (1 - (Math.max(Math.log10(Math.max(v, 1e-9)), lo) - lo) / (hi - lo)) * ch);
+    // gridlines at powers of 10
+    ctx.font = '9px ' + MONO; ctx.textAlign = 'right';
+    for (let e = Math.ceil(lo); e <= Math.floor(hi); e += 2) {
+      const y = padT + (1 - (e - lo) / (hi - lo)) * ch;
+      ctx.strokeStyle = 'rgba(42,46,58,0.6)';
+      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w - padR, y); ctx.stroke();
+      ctx.fillStyle = '#7E8598';
+      ctx.fillText('$' + (e >= 6 ? fmt(Math.pow(10, e - 6)) + 'M' : e >= 3 ? fmt(Math.pow(10, e - 3)) + 'k' : Math.pow(10, e) >= 1 ? fmt(Math.pow(10, e)) : Math.pow(10, e).toFixed(2)), padL - 5, y + 3);
+    }
+    // ghosts
+    ctx.strokeStyle = 'rgba(126,133,152,0.10)'; ctx.lineWidth = 1;
+    for (const p of paths) {
+      ctx.beginPath(); ctx.moveTo(X(0), Yv(p[0]));
+      for (let t = 1; t <= T; t++) ctx.lineTo(X(t), Yv(p[t]));
+      ctx.stroke();
+    }
+    // ensemble mean (analytic) — dashed pale line
+    ctx.setLineDash([5, 4]); ctx.strokeStyle = 'rgba(230,234,240,0.75)'; ctx.lineWidth = 1.3;
+    ctx.beginPath(); ctx.moveTo(X(0), Yv(START));
+    for (let t = 1; t <= T; t++) ctx.lineTo(X(t), Yv(START * Math.pow(1 + 0.05 * f, t)));
+    ctx.stroke(); ctx.setLineDash([]);
+    // median path — amber
+    ctx.strokeStyle = '#F0B24A'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(X(0), Yv(medianPath[0]));
+    for (let t = 1; t <= T; t++) ctx.lineTo(X(t), Yv(medianPath[t]));
+    ctx.stroke();
+    // start line
+    ctx.setLineDash([2, 3]); ctx.strokeStyle = 'rgba(201,58,43,0.5)';
+    ctx.beginPath(); ctx.moveTo(padL, Yv(START)); ctx.lineTo(w - padR, Yv(START)); ctx.stroke(); ctx.setLineDash([]);
+    // labels
+    ctx.textAlign = 'left'; ctx.font = '10px ' + MONO;
+    ctx.fillStyle = 'rgba(230,234,240,0.9)';
+    ctx.fillText('ensemble mean (theory)', padL + 6, Yv(START * Math.pow(1 + 0.05 * f, T * 0.98)) - 5);
+    ctx.fillStyle = '#F0B24A';
+    const myY = Yv(medianPath[T]);
+    ctx.fillText('the median you', padL + cw * 0.66, Math.min(h - padB - 6, myY - 7));
+    ctx.fillStyle = '#7E8598'; ctx.textAlign = 'center';
+    ctx.fillText('flips →', padL + cw / 2, h - 8);
+  }
+
+  bindRange('sx1-f', 'sx1-f-out', v => v + '%', v => { f = v / 100; simulate(); cv.redraw(); });
+  document.getElementById('sx1-run').addEventListener('click', () => { seed++; simulate(); cv.redraw(); });
+  simulate();
+  cv.redraw();
+})();
+
+/* ================= SIM 02: russian roulette ================= */
+(function sim02() {
+  const canvas = document.getElementById('c2');
+  const M = 2000, PAY = 1e7, MYMAX = 20;
+  let C = 6, R = 10, seed = 77;
+  let lives = null, revealIdx = 0;
+  let myRound = 0, myWealth = 0, myDead = 0;
+  const tick = document.getElementById('s2-ticker');
+  const pullBtn = document.getElementById('s2-pull');
+  const resetBtn = document.getElementById('s2-reset');
+
+  function layout(w) {
+    const dot = 9;
+    const cols = Math.max(10, Math.floor((w - 28) / dot));
+    return { dot, cols, rows: Math.ceil(M / cols), gridTop: 78 };
+  }
+  const cv = makeCanvas(canvas, w => { const L = layout(w); return L.gridTop + L.rows * L.dot + 16; }, draw);
+
+  function draw(ctx, w, h) {
+    ctx.fillStyle = '#14161C'; ctx.fillRect(0, 0, w, h);
+    const sy = 26;
+    ctx.font = '10px ' + MONO; ctx.textAlign = 'left'; ctx.fillStyle = '#7E8598';
+    ctx.fillText('YOUR LIFE', 14, sy - 8);
+    const slotW = Math.max(9, Math.min(19, (w - 190) / MYMAX));
+    for (let i = 0; i < MYMAX; i++) {
+      const x = 14 + i * slotW;
+      if (myDead && i === myDead - 1) {
+        ctx.fillStyle = '#E4523F'; ctx.fillRect(x, sy, slotW - 3, 14);
+      } else if (i < myRound && (!myDead || i < myDead - 1)) {
+        ctx.fillStyle = '#F0B24A'; ctx.fillRect(x, sy, slotW - 3, 14);
+      } else {
+        ctx.strokeStyle = '#2A2E3A'; ctx.strokeRect(x + 0.5, sy + 0.5, slotW - 4, 13);
+      }
+    }
+    ctx.textAlign = 'right'; ctx.font = '12px ' + MONO;
+    if (myDead) { ctx.fillStyle = '#E4523F'; ctx.fillText('DEAD · pull ' + myDead, w - 14, sy + 11); }
+    else { ctx.fillStyle = myWealth ? '#F0B24A' : '#7E8598'; ctx.fillText(fmtMoney(myWealth), w - 14, sy + 11); }
+    ctx.strokeStyle = 'rgba(42,46,58,0.9)';
+    ctx.beginPath(); ctx.moveTo(14, 54); ctx.lineTo(w - 14, 54); ctx.stroke();
+    ctx.textAlign = 'left'; ctx.font = '10px ' + MONO; ctx.fillStyle = '#7E8598';
+    ctx.fillText(w < 580 ? 'THE OTHER 2,000 OF YOU' : 'THE OTHER 2,000 OF YOU — alternative histories of the same decision', 14, 70);
+    const L = layout(w);
+    for (let i = 0; i < M; i++) {
+      const gx = 14 + (i % L.cols) * L.dot, gy = L.gridTop + Math.floor(i / L.cols) * L.dot;
+      if (!lives || i >= revealIdx) {
+        ctx.fillStyle = 'rgba(126,133,152,0.15)';
+      } else {
+        const d = lives[i];
+        if (!d.deadAt) ctx.fillStyle = '#5CB98B';
+        else {
+          const t = d.deadAt / R;
+          ctx.fillStyle = 'rgb(' + Math.round(80 + t * 148) + ',' + Math.round(22 + t * 60) + ',' + Math.round(17 + t * 46) + ')';
+        }
+      }
+      ctx.fillRect(gx, gy, L.dot - 2, L.dot - 2);
+    }
+  }
+
+  function updateAnalytic() {
+    const p = Math.pow(1 - 1 / C, R);
+    document.getElementById('s2-analytic').textContent = p < 0.001 ? '<0.1%' : fmt(p * 100, 1) + '%';
+    document.getElementById('s2-savg').textContent = fmtMoney(PAY * R);
+  }
+
+  let revealRaf = null;
+  function runEnsemble() {
+    if (revealRaf) { cancelAnimationFrame(revealRaf); revealRaf = null; }
+    seed++;
+    const rng = mulberry32(seed);
+    lives = [];
+    let alive = 0, totalWealth = 0;
+    for (let i = 0; i < M; i++) {
+      let deadAt = 0;
+      for (let r = 1; r <= R; r++) {
+        if (rng() < 1 / C) { deadAt = r; break; }
+      }
+      if (!deadAt) { alive++; totalWealth += PAY * R; }
+      lives.push({ deadAt });
+    }
+    document.getElementById('s2-sim').textContent = fmt(alive / M * 100, 1) + '%';
+    document.getElementById('s2-eavg').textContent = fmtMoney(totalWealth / M);
+    tick.innerHTML = '<b>' + fmt(alive) + '</b> of 2,000 yous survived and wrote memoirs about courage and discipline. <span class="r">' + fmt(M - alive) + ' died</span>; none were reachable for comment.';
+    revealIdx = 0;
+    if (REDUCED) { revealIdx = M; cv.redraw(); return; }
+    (function step() { revealIdx += 60; cv.redraw(); if (revealIdx < M) revealRaf = requestAnimationFrame(step); else revealRaf = null; })();
+  }
+
+  pullBtn.addEventListener('click', () => {
+    if (myDead || myRound >= MYMAX) return;
+    myRound++;
+    resetBtn.disabled = false;
+    if (Math.random() < 1 / C) {
+      myDead = myRound;
+      const hadFocus = document.activeElement === pullBtn;
+      pullBtn.disabled = true;
+      if (hadFocus) resetBtn.focus({ preventScroll: true });
+      tick.innerHTML = 'The hammer found the bullet on pull <span class="r">' + myDead + '</span>. Estate: <span class="r">$0</span>. Your family describes you as “always so lucky.”';
+    } else {
+      myWealth += PAY;
+      if (myRound >= MYMAX) {
+        pullBtn.disabled = true;
+        tick.innerHTML = 'The tycoon is out of patience. You walk away with <b>' + fmtMoney(myWealth) + '</b> — and a probability-of-being-here of ' + fmt(Math.pow(1 - 1 / C, MYMAX) * 100, 1) + '%.';
+      } else {
+        tick.innerHTML = 'Click. <b>' + fmtMoney(myWealth) + '</b> banked. The next pull pays the same and costs the same. Feeling skilled yet?';
+      }
+    }
+    cv.redraw();
+  });
+  resetBtn.addEventListener('click', () => {
+    myRound = 0; myWealth = 0; myDead = 0;
+    pullBtn.disabled = false; resetBtn.disabled = true;
+    tick.textContent = 'Play your own life first. Then run the other 2,000 of you.';
+    cv.redraw();
+  });
+  function clearEnsemble() {
+    if (revealRaf) { cancelAnimationFrame(revealRaf); revealRaf = null; }
+    lives = null; revealIdx = 0;
+    document.getElementById('s2-sim').textContent = '–';
+    document.getElementById('s2-eavg').textContent = '–';
+    cv.redraw();
+  }
+  bindRange('s2-ch', 's2-ch-out', v => v, v => { C = v; updateAnalytic(); clearEnsemble(); });
+  bindRange('s2-r', 's2-r-out', v => v, v => { R = v; updateAnalytic(); clearEnsemble(); });
+  document.getElementById('s2-run').addEventListener('click', runEnsemble);
+  updateAnalytic();
+})();
+
+/* ================= SIM 03: the dentist ================= */
+(function sim03() {
+  const canvas = document.getElementById('c3');
+  const MU = 0.15, SIG = 0.10, STEPS = 98280; // 390 min × 252 trading days
+  const FREQS = [
+    { label: 'Year', n: 1 }, { label: 'Quarter', n: 4 }, { label: 'Month', n: 12 },
+    { label: 'Week', n: 52 }, { label: 'Day', n: 252 }, { label: 'Hour', n: 1638 }, { label: 'Minute', n: 98280 },
+  ];
+  let seed = 5, fi = 4, pain = 2;
+  const W = new Float64Array(STEPS + 1);
+  let greens = 0, reds = 0;
+
+  function simulateYear() {
+    const rng = mulberry32(seed);
+    const dt = 1 / STEPS, drift = (MU - SIG * SIG / 2) * dt, volStep = SIG * Math.sqrt(dt);
+    let lw = 0; W[0] = 1;
+    for (let i = 1; i <= STEPS; i++) { lw += drift + volStep * randn(rng); W[i] = Math.exp(lw); }
+  }
+
+  function recount() {
+    const n = FREQS[fi].n;
+    greens = 0; reds = 0;
+    for (let i = 0; i < n; i++) {
+      const a = Math.round(i * STEPS / n), b = Math.round((i + 1) * STEPS / n);
+      if (W[b] > W[a]) greens++; else reds++;
+    }
+    updateStats();
+  }
+
+  function updateStats() {
+    const n = FREQS[fi].n;
+    const final = (W[STEPS] - 1) * 100;
+    const fEl = document.getElementById('s3-final');
+    fEl.textContent = (final >= 0 ? '+' : '') + fmt(final, 1) + '%';
+    fEl.className = 'v ' + (final >= 0 ? 'amber' : 'red');
+    document.getElementById('s3-green').textContent = fmt(greens);
+    document.getElementById('s3-red').textContent = fmt(reds);
+    const pG = normCdf(((MU - SIG * SIG / 2) / SIG) * Math.sqrt(1 / n));
+    document.getElementById('s3-p').textContent = fmt(pG * 100, n > 200 ? 2 : 1) + '%';
+    const net = greens - pain * reds;
+    const mEl = document.getElementById('s3-mood');
+    mEl.textContent = (net >= 0 ? '+' : '') + fmt(net);
+    mEl.className = 'v ' + (net >= 0 ? 'green' : 'red');
+    document.getElementById('s3-ticker').innerHTML =
+      'You look ' + (n === 1 ? '<b>once</b>' : '<b>' + fmt(n) + ' times</b>') + ' this year: <span class="g">' + fmt(greens) + ' green</span>, <span class="r">' + fmt(reds) + ' red</span>. Same path in every row — 15% drift, 10% volatility, geometric Brownian motion.';
+  }
+
+  const cv = makeCanvas(canvas, w => Math.max(250, Math.min(360, w * 0.4)), draw);
+  function draw(ctx, w, h) {
+    ctx.fillStyle = '#14161C'; ctx.fillRect(0, 0, w, h);
+    const padL = 48, padR = 16, padT = 16, ribbonH = 16, padB = 34 + ribbonH;
+    const cw = w - padL - padR, ch = h - padT - padB;
+    let lo = Infinity, hi = -Infinity;
+    for (let i = 0; i <= STEPS; i += 8) { const v = W[i]; if (v < lo) lo = v; if (v > hi) hi = v; }
+    lo = Math.min(lo, 0.995); hi = Math.max(hi, 1.005);
+    const span = hi - lo;
+    lo -= span * 0.05; hi += span * 0.05;
+    const Yv = v => padT + (1 - (v - lo) / (hi - lo)) * ch;
+    ctx.strokeStyle = 'rgba(42,46,58,0.7)'; ctx.lineWidth = 1;
+    for (let q = 1; q < 4; q++) {
+      const x = padL + cw * q / 4;
+      ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, padT + ch); ctx.stroke();
+    }
+    ctx.setLineDash([4, 4]); ctx.strokeStyle = 'rgba(240,178,74,0.35)';
+    ctx.beginPath(); ctx.moveTo(padL, Yv(1)); ctx.lineTo(padL + cw, Yv(1)); ctx.stroke(); ctx.setLineDash([]);
+    ctx.font = '10px ' + MONO; ctx.fillStyle = '#7E8598'; ctx.textAlign = 'right';
+    ctx.fillText('+' + fmt((hi - 1) * 100, 0) + '%', padL - 6, padT + 9);
+    ctx.fillText('0%', padL - 6, Yv(1) + 3);
+    ctx.fillText(fmt((lo - 1) * 100, 0) + '%', padL - 6, padT + ch);
+    ctx.textAlign = 'center';
+    ['Q1', 'Q2', 'Q3', 'Q4'].forEach((q, i) => ctx.fillText(q, padL + cw * (i + 0.5) / 4, padT + ch + 13));
+    // equity curve
+    ctx.strokeStyle = '#C6CBD8'; ctx.lineWidth = 1.4; ctx.beginPath();
+    for (let px = 0; px <= cw; px++) {
+      const y = Yv(W[Math.round(px / cw * STEPS)]);
+      if (px === 0) ctx.moveTo(padL, y); else ctx.lineTo(padL + px, y);
+    }
+    ctx.stroke();
+    ctx.fillStyle = '#F0B24A'; ctx.beginPath(); ctx.arc(padL + cw, Yv(W[STEPS]), 3.5, 0, 7); ctx.fill();
+    const n = FREQS[fi].n;
+    if (n <= 252) {
+      for (let i = 0; i < n; i++) {
+        const a = Math.round(i * STEPS / n), b = Math.round((i + 1) * STEPS / n);
+        ctx.fillStyle = W[b] > W[a] ? '#5CB98B' : '#E4523F';
+        ctx.beginPath(); ctx.arc(padL + b / STEPS * cw, Yv(W[b]), 2.2, 0, 7); ctx.fill();
+      }
+    }
+    // mood ribbon
+    const ry = h - ribbonH - 10;
+    const px = Math.max(1, Math.ceil(cw));
+    const bump = new Float32Array(px), cnt = new Float32Array(px);
+    for (let i = 0; i < n; i++) {
+      const a = Math.round(i * STEPS / n), b = Math.round((i + 1) * STEPS / n);
+      const up = W[b] > W[a] ? 1 : 0;
+      const p0 = Math.floor(a / STEPS * (px - 1)), p1 = Math.max(p0, Math.floor(b / STEPS * (px - 1)));
+      for (let p = p0; p <= p1; p++) { bump[p] += up; cnt[p]++; }
+    }
+    for (let p = 0; p < px; p++) {
+      const f = cnt[p] ? bump[p] / cnt[p] : 0.5;
+      ctx.fillStyle = 'rgba(' + Math.round(228 + (92 - 228) * f) + ',' + Math.round(82 + (185 - 82) * f) + ',' + Math.round(63 + (139 - 63) * f) + ',0.9)';
+      ctx.fillRect(padL + p, ry, 1, ribbonH);
+    }
+    ctx.fillStyle = '#7E8598'; ctx.textAlign = 'left'; ctx.font = '9px ' + MONO;
+    ctx.fillText('HOW EACH CHECK FELT', padL, ry - 4);
+  }
+
+  const segEl = document.getElementById('s3-freq');
+  FREQS.forEach((f, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = f.label;
+    if (i === fi) b.className = 'on';
+    b.setAttribute('aria-pressed', i === fi ? 'true' : 'false');
+    b.addEventListener('click', () => {
+      fi = i;
+      Array.from(segEl.children).forEach((c, j) => { c.className = j === fi ? 'on' : ''; c.setAttribute('aria-pressed', j === fi ? 'true' : 'false'); });
+      recount(); cv.redraw();
+    });
+    segEl.appendChild(b);
+  });
+  bindRange('s3-pain', 's3-pain-out', v => fmt(v, 1), v => { pain = v; updateStats(); });
+  document.getElementById('s3-new').addEventListener('click', () => { seed++; simulateYear(); recount(); cv.redraw(); });
+
+  simulateYear();
+  recount();
+  cv.redraw();
+})();
+</script>
+<script>
+'use strict';
+/* ================= INTERLUDE: fat tony's coin ================= */
+(function simFT() {
+  const canvas = document.getElementById('cx2');
+  const PRIORS = { 1: '10', 2: '100', 3: '1k', 4: '10k', 5: '100k', 6: '1M' };
+  let k = 20, pv = 4;
+
+  function post(kk, f) { return f / (f + (1 - f) * Math.pow(0.5, kk)); }
+
+  function updateStats() {
+    const f = Math.pow(10, -pv);
+    const p = post(k, f);
+    const heads = p * 1 + (1 - p) * 0.5;
+    document.getElementById('sx2-ft').textContent = fmt(heads * 100, heads > 0.999 ? 3 : 1) + '%';
+    document.getElementById('sx2-post').textContent =
+      p > 0.9999 ? '>99.99%' : p < 0.0001 ? '<0.01%' : fmt(p * 100, 1) + '%';
+    const kStar = Math.ceil(Math.log2((1 - f) / f));
+    document.getElementById('sx2-ticker').innerHTML = k >= kStar
+      ? 'After <b>' + k + ' heads</b>, Fat Tony puts ' + (p > 0.9999 ? '>99.99' : fmt(p * 100, 1)) + '% on “the game is rigged.” Dr. John is still quoting the syllabus.'
+      : 'At ' + k + ' heads the two still roughly agree. Around flip <b>' + kStar + '</b>, Fat Tony walks away from the model.';
+  }
+
+  const cv = makeCanvas(canvas, w => Math.max(190, Math.min(240, w * 0.34)), draw);
+  function draw(ctx, w, h) {
+    ctx.fillStyle = '#14161C'; ctx.fillRect(0, 0, w, h);
+    const padL = 44, padR = 16, padT = 18, padB = 28;
+    const cw = w - padL - padR, ch = h - padT - padB;
+    const f = Math.pow(10, -pv);
+    const X = kk => padL + kk / 99 * cw;
+    const Yv = p => padT + (1 - (p - 0.4) / 0.6) * ch;
+    ctx.font = '10px ' + MONO; ctx.textAlign = 'right'; ctx.fillStyle = '#7E8598';
+    [0.5, 0.75, 1.0].forEach(p => {
+      ctx.strokeStyle = 'rgba(42,46,58,0.7)';
+      ctx.beginPath(); ctx.moveTo(padL, Yv(p)); ctx.lineTo(w - padR, Yv(p)); ctx.stroke();
+      ctx.fillText(fmt(p * 100) + '%', padL - 5, Yv(p) + 3);
+    });
+    ctx.textAlign = 'center';
+    [0, 25, 50, 75, 99].forEach(kk => ctx.fillText(kk, X(kk), h - 18));
+    ctx.fillText('heads in a row →', padL + cw / 2, h - 5);
+    // Dr John — flat
+    ctx.setLineDash([5, 4]); ctx.strokeStyle = 'rgba(198,203,216,0.7)'; ctx.lineWidth = 1.3;
+    ctx.beginPath(); ctx.moveTo(padL, Yv(0.5)); ctx.lineTo(w - padR, Yv(0.5)); ctx.stroke(); ctx.setLineDash([]);
+    // Fat Tony curve
+    ctx.strokeStyle = '#F0B24A'; ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let kk = 0; kk <= 99; kk++) {
+      const p = post(kk, f) * 1 + (1 - post(kk, f)) * 0.5;
+      if (kk === 0) ctx.moveTo(X(kk), Yv(p)); else ctx.lineTo(X(kk), Yv(p));
+    }
+    ctx.stroke();
+    // current k marker
+    const pNow = post(k, f) * 1 + (1 - post(k, f)) * 0.5;
+    ctx.fillStyle = '#F0B24A';
+    ctx.beginPath(); ctx.arc(X(k), Yv(pNow), 4, 0, 7); ctx.fill();
+    ctx.textAlign = 'left'; ctx.fillStyle = 'rgba(198,203,216,0.85)';
+    ctx.fillText('DR. JOHN: 50%, FOREVER', padL + 6, Yv(0.5) + 13);
+    ctx.fillStyle = '#F0B24A';
+    ctx.fillText('FAT TONY', padL + cw * 0.52, Yv(post(52, f) * 1 + (1 - post(52, f)) * 0.5) - 8);
+  }
+
+  bindRange('sx2-k', 'sx2-k-out', v => v, v => { k = v; updateStats(); cv.redraw(); });
+  bindRange('sx2-prior', 'sx2-prior-out', v => PRIORS[v], v => { pv = v; updateStats(); cv.redraw(); });
+  updateStats();
+})();
+
+/* ================= SIM 04: process X (the turkey) ================= */
+(function sim04() {
+  const canvas = document.getElementById('c4');
+  const DOOM = 1001, HAZ = 0.001;
+  let world = 'X', seedBase = 40;
+  let n = 60, state = 'watch', deathDay = 0, banked = 0, butcher = false;
+  let pays = [], yDeath = 0, animRaf = null;
+  const tick = document.getElementById('s4-ticker');
+  const rideBtn = document.getElementById('s4-ride');
+  const cashBtn = document.getElementById('s4-cash');
+  const resetBtn = document.getElementById('s4-reset');
+
+  function reset(keepWorld) {
+    seedBase++;
+    if (animRaf) { cancelAnimationFrame(animRaf); animRaf = null; }
+    const rng = mulberry32(seedBase);
+    pays = [0];
+    for (let i = 1; i <= 3000; i++) pays.push(Math.max(4, 100 + 0.02 * i + 11 * randn(rng)));
+    yDeath = Math.min(2900, Math.max(61, 1 + Math.floor(Math.log(1 - rng()) / Math.log(1 - HAZ))));
+    n = 60; state = 'watch'; banked = 0; butcher = false; deathDay = 0;
+    for (let i = 1; i <= n; i++) banked += pays[i];
+    rideBtn.disabled = false; cashBtn.disabled = false;
+    document.getElementById('s4-butcher').checked = false;
+    document.getElementById('s4-real').textContent = '?';
+    document.getElementById('s4-real').className = 'v';
+    if (!keepWorld) { world = 'X'; document.getElementById('s4-worldy').checked = false; }
+    updateUI();
+    cv.redraw();
+  }
+
+  function laplace() { return (n + 1) / (n + 2); }
+
+  function updateUI() {
+    document.getElementById('s4-days').textContent = fmt(n);
+    document.getElementById('s4-bank').textContent = state === 'dead' ? '0' : short(Math.round(banked));
+    document.getElementById('s4-model').textContent = fmt(laplace() * 100, 2) + '%';
+    if (state === 'watch') {
+      tick.innerHTML = n < 400
+        ? 'Day <b>' + fmt(n) + '</b>. ' + fmt(n) + ' feedings, zero missed. The line looks even a little better than last quarter.'
+        : n < 900
+          ? 'Day <b>' + fmt(n) + '</b>. The risk committee has upgraded Process X to AAA. Your model has never been more confident.'
+          : 'Day <b>' + fmt(n) + '</b>. Confidence: ' + fmt(laplace() * 100, 2) + '%. It has literally never been safer to stay. Right?';
+    }
+  }
+
+  function reveal(died) {
+    if (animRaf) { cancelAnimationFrame(animRaf); animRaf = null; }
+    deathDay = world === 'X' ? DOOM : yDeath;
+    const hadFocus = document.activeElement === rideBtn || document.activeElement === cashBtn;
+    rideBtn.disabled = true; cashBtn.disabled = true;
+    resetBtn.hidden = false;
+    if (hadFocus) resetBtn.focus({ preventScroll: true });
+    document.getElementById('s4-worldy-wrap').hidden = false;
+    document.getElementById('s4-butcher-wrap').hidden = world !== 'X';
+    const realEl = document.getElementById('s4-real');
+    if (world === 'X') {
+      realEl.textContent = '0% on day 1,001';
+      realEl.className = 'v red';
+      tick.innerHTML = died
+        ? 'Day <b>1,001</b>. The feeding was never about you. This morning your model read <b>' + fmt(laplace() * 100, 2) + '%</b>. Banked well-being: <span class="r">0</span>.'
+        : 'You banked <b>' + short(Math.round(banked)) + '</b> on day ' + fmt(n) + '. The grey line is the future you walked away from — the axe was scheduled for <span class="r">day 1,001</span>. Would you have left without knowing this was a parable?';
+    } else {
+      realEl.textContent = '99.9%, every day';
+      realEl.className = 'v green';
+      tick.innerHTML = died
+        ? 'A 1-in-1,000 accident on day <b>' + fmt(deathDay) + '</b>. Painful — but here your data was <span class="g">honest</span>: the hazard you estimated was the hazard that killed you. Induction works in this world. Process X lived in the other one.'
+        : 'You banked <b>' + short(Math.round(banked)) + '</b> on day ' + fmt(n) + '. In this world the accident (day ' + fmt(deathDay) + ') was a fair coin all along — your model and reality agree. This is what Mediocristan feels like.';
+    }
+    updateUI();
+    cv.redraw();
+  }
+
+  function ride() {
+    if (state !== 'watch') return;
+    if (animRaf) { cancelAnimationFrame(animRaf); animRaf = null; }
+    const target = n + 50;
+    function step() {
+      if (state !== 'watch') return;
+      for (let i = 0; i < 3 && n < target; i++) {
+        n++;
+        banked += pays[n];
+        if ((world === 'X' && n === DOOM) || (world === 'Y' && n === yDeath)) {
+          state = 'dead'; banked = 0;
+          reveal(true);
+          return;
+        }
+      }
+      updateUI();
+      cv.redraw();
+      if (n < target) animRaf = requestAnimationFrame(step);
+    }
+    if (REDUCED) {
+      while (n < target) {
+        n++; banked += pays[n];
+        if ((world === 'X' && n === DOOM) || (world === 'Y' && n === yDeath)) { state = 'dead'; banked = 0; reveal(true); return; }
+      }
+      updateUI(); cv.redraw();
+    } else step();
+  }
+
+  const cv = makeCanvas(canvas, w => Math.max(260, Math.min(360, w * 0.4)), draw);
+  function draw(ctx, w, h) {
+    ctx.fillStyle = '#14161C'; ctx.fillRect(0, 0, w, h);
+    const padL = 44, padR = 50, padT = 22, padB = 30;
+    const cw = w - padL - padR, ch = h - padT - padB;
+    const revealed = state !== 'watch';
+    const maxDay = revealed ? Math.max(deathDay + 60, world === 'X' ? 1100 : deathDay + 60) : Math.max(n + 40, 300);
+    const X = d => padL + d / maxDay * cw;
+    const Yp = v => padT + (1 - v / 200) * ch;
+    const Yc = p => padT + (1 - (Math.max(p, 0.95) - 0.95) / 0.05) * ch;
+    ctx.font = '10px ' + MONO;
+    ctx.textAlign = 'right'; ctx.fillStyle = '#7E8598';
+    [0, 50, 100, 150, 200].forEach(v => {
+      ctx.strokeStyle = 'rgba(42,46,58,0.6)';
+      ctx.beginPath(); ctx.moveTo(padL, Yp(v)); ctx.lineTo(w - padR, Yp(v)); ctx.stroke();
+      ctx.fillText(v, padL - 5, Yp(v) + 3);
+    });
+    ctx.textAlign = 'left';
+    ctx.fillStyle = 'rgba(240,178,74,0.8)';
+    ctx.fillText('100%', w - padR + 5, Yc(1) + 3);
+    ctx.fillText('95%', w - padR + 5, Yc(0.95) + 3);
+    ctx.fillStyle = '#7E8598'; ctx.textAlign = 'center';
+    ctx.fillText('days →', padL + cw / 2, h - 8);
+    // observed payouts
+    ctx.strokeStyle = '#C6CBD8'; ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    const lim = state === 'dead' ? deathDay - 1 : n;
+    for (let d = 1; d <= lim; d++) {
+      const x = X(d), y = Yp(pays[d]);
+      if (d === 1) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    // unobserved future (after cash-out)
+    if (state === 'cashed') {
+      ctx.strokeStyle = 'rgba(126,133,152,0.45)';
+      ctx.beginPath();
+      for (let d = n; d < deathDay; d++) {
+        const x = X(d), y = Yp(pays[d]);
+        if (d === n) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+    // the cliff
+    if (revealed) {
+      ctx.strokeStyle = '#E4523F'; ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(X(deathDay - 1), Yp(pays[deathDay - 1]));
+      ctx.lineTo(X(deathDay), Yp(0));
+      ctx.stroke();
+      ctx.fillStyle = '#E4523F'; ctx.font = '16px Georgia,serif'; ctx.textAlign = 'center';
+      ctx.fillText('†', X(deathDay), Yp(0) - 8);
+      ctx.font = '10px ' + MONO;
+      ctx.fillText('day ' + fmt(deathDay), X(deathDay), Yp(0) + 14);
+    }
+    // model confidence curve (amber, right axis)
+    ctx.strokeStyle = 'rgba(240,178,74,0.85)'; ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    const cLim = state === 'dead' ? deathDay - 1 : n;
+    for (let d = 5; d <= cLim; d++) {
+      const x = X(d), y = Yc((d + 1) / (d + 2));
+      if (d === 5) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    if (state === 'dead') {
+      ctx.strokeStyle = 'rgba(240,178,74,0.85)';
+      ctx.beginPath(); ctx.moveTo(X(deathDay - 1), Yc(deathDay / (deathDay + 1))); ctx.lineTo(X(deathDay), Yc(0.95)); ctx.stroke();
+    }
+    ctx.fillStyle = 'rgba(240,178,74,0.9)'; ctx.textAlign = 'left'; ctx.font = '9px ' + MONO;
+    ctx.fillText('MODEL CONFIDENCE →', padL + 4, Math.max(padT + 32, Yc((n + 1) / (n + 2)) - 6));
+    ctx.fillStyle = '#C6CBD8';
+    ctx.fillText('DAILY PAYOUT', padL + 4, Yp(0) - 8);
+    // butcher's calendar
+    if (butcher && world === 'X') {
+      ctx.setLineDash([6, 5]); ctx.strokeStyle = '#C93A2B'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(X(DOOM), padT); ctx.lineTo(X(DOOM), padT + ch); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = '#E4523F'; ctx.textAlign = 'right'; ctx.font = '10px ' + MONO;
+      ctx.fillText(w < 580 ? 'THANKSGIVING — DAY 1,001' : 'THANKSGIVING — SCHEDULED SINCE DAY 0', X(DOOM) - 6, padT + 10);
+      ctx.font = 'italic 11px Georgia,serif';
+      ctx.fillText(w < 580 ? 'scheduled since day 0' : 'nothing in the data pointed to it; everything in the world did', X(DOOM) - 6, padT + 24);
+    }
+    // day counter
+    ctx.fillStyle = state === 'dead' ? '#E4523F' : '#E8EAF0';
+    ctx.font = '13px ' + MONO; ctx.textAlign = 'left';
+    ctx.fillText('DAY ' + fmt(state === 'watch' ? n : deathDay), padL + 4, padT - 6);
+  }
+
+  rideBtn.addEventListener('click', ride);
+  cashBtn.addEventListener('click', () => { if (state !== 'watch') return; state = 'cashed'; reveal(false); });
+  resetBtn.addEventListener('click', () => reset(true));
+  document.getElementById('s4-butcher').addEventListener('change', e => { butcher = e.target.checked; cv.redraw(); });
+  document.getElementById('s4-worldy').addEventListener('change', e => {
+    world = e.target.checked ? 'Y' : 'X';
+    reset(true);
+    tick.innerHTML = world === 'Y'
+      ? 'Same-looking feed, different universe: here the only danger is a genuine <b>1-in-1,000 daily accident</b> — no calendar, no butcher. Play again.'
+      : 'Back to Process X. Play again.';
+  });
+  reset(false);
+})();
+
+/* ================= INTERLUDE: the headline machine ================= */
+(function simHM() {
+  const canvas = document.getElementById('cx3');
+  const choices = document.getElementById('sx3-choices');
+  const deck = document.getElementById('sx3-deck');
+  const tick = document.getElementById('sx3-ticker');
+  let seed = 900, prices = null, picked = -1, pickedText = '';
+
+  function gen() {
+    while (true) {
+      seed++;
+      const rng = mulberry32(seed);
+      const p = [100];
+      for (let i = 0; i < 250; i++) p.push(p[i] * (1 + 0.018 * randn(rng)));
+      if (Math.abs(p[250] / p[230] - 1) >= 0.05) { prices = p; return; }
+    }
+  }
+
+  function mirrored() {
+    const m = [100];
+    for (let i = 0; i < 250; i++) m.push(m[i] * (1 - (prices[i + 1] / prices[i] - 1)));
+    return m;
+  }
+
+  function chart(ctx, series, x0, y0, cw, ch, headline) {
+    let lo = Infinity, hi = -Infinity;
+    for (const v of series) { if (v < lo) lo = v; if (v > hi) hi = v; }
+    const pad = (hi - lo) * 0.08; lo -= pad; hi += pad;
+    ctx.strokeStyle = 'rgba(42,46,58,0.8)';
+    ctx.strokeRect(x0 + 0.5, y0 + 0.5, cw, ch);
+    ctx.strokeStyle = series[250] >= series[0] ? '#5CB98B' : '#E4523F';
+    ctx.lineWidth = 1.3;
+    ctx.beginPath();
+    for (let i = 0; i <= 250; i++) {
+      const x = x0 + i / 250 * cw, y = y0 + (1 - (series[i] - lo) / (hi - lo)) * ch;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    const ret = (series[250] / series[0] - 1) * 100;
+    ctx.font = '11px ' + MONO; ctx.textAlign = 'right';
+    ctx.fillStyle = ret >= 0 ? '#5CB98B' : '#E4523F';
+    ctx.fillText((ret >= 0 ? '+' : '') + fmt(ret, 1) + '%', x0 + cw - 6, y0 + 14);
+    if (headline) {
+      ctx.fillStyle = '#C6CBD8'; ctx.font = 'italic 11px Georgia,serif'; ctx.textAlign = 'left';
+      let text = headline;
+      while (ctx.measureText('“' + text + '”').width > cw - 8 && text.length > 8) text = text.slice(0, -1);
+      if (text !== headline) text += '…';
+      ctx.fillText('“' + text + '”', x0 + 2, y0 + ch + 15);
+    }
+  }
+
+  const cv = makeCanvas(canvas, w => (picked >= 0 && w < 580) ? 320 : 190, draw);
+  function draw(ctx, w, h) {
+    ctx.fillStyle = '#14161C'; ctx.fillRect(0, 0, w, h);
+    if (!prices) return;
+    if (picked < 0) {
+      chart(ctx, prices, 14, 12, w - 28, h - 34, null);
+      ctx.fillStyle = '#7E8598'; ctx.font = '10px ' + MONO; ctx.textAlign = 'left';
+      ctx.fillText('250 TRADING DAYS', 16, h - 8);
+    } else if (w < 580) {
+      chart(ctx, prices, 14, 8, w - 28, 120, pickedText);
+      chart(ctx, mirrored(), 14, 168, w - 28, 120, pickedText);
+    } else {
+      const cw = (w - 42) / 2;
+      chart(ctx, prices, 14, 10, cw, h - 44, pickedText);
+      chart(ctx, mirrored(), 28 + cw, 10, cw, h - 44, pickedText);
+    }
+  }
+
+  choices.querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', () => {
+      picked = Number(b.dataset.h);
+      pickedText = b.textContent.replace(/[“”]/g, '');
+      choices.querySelectorAll('button').forEach(x => { x.disabled = true; x.classList.remove('primary'); });
+      b.disabled = false; b.classList.add('primary');
+      deck.hidden = false;
+      tick.innerHTML = 'Both charts: the <b>same seeded coin flips</b> — the right one is the left with every move’s sign flipped. Your headline reads fine under either. That’s how you can tell it’s a story, not a cause.';
+      cv.resize();
+      cv.redraw();
+    });
+  });
+  document.getElementById('sx3-again').addEventListener('click', () => {
+    picked = -1; pickedText = '';
+    choices.querySelectorAll('button').forEach(x => { x.disabled = false; x.classList.remove('primary'); });
+    deck.hidden = true;
+    tick.textContent = 'Pick the headline that best explains the move.';
+    gen();
+    cv.resize();
+    cv.redraw();
+  });
+  gen();
+  cv.redraw();
+})();
+
+/* ================= SIM 05: two countries ================= */
+(function sim05() {
+  const canvas = document.getElementById('c5');
+  const N = 2000, DAYS = 12600;
+  let mode = 0, seedP = 21, seedM = 501, alpha = 1.3, dayFilter = 0;
+  let heights = [], wealths = [], newTall = false, newRich = false;
+  let baseMeanH = 0, baseMeanW = 0;
+  let gRet = null, eRet = null;
+  const tick = document.getElementById('s5-ticker');
+
+  function t3(rng) {
+    const a = randn(rng), b = randn(rng), c = randn(rng), d = randn(rng);
+    return a / Math.sqrt((b * b + c * c + d * d) / 3);
+  }
+
+  function samplePeople() {
+    const rng = mulberry32(seedP);
+    heights = []; wealths = []; newTall = false; newRich = false;
+    for (let i = 0; i < N; i++) heights.push(170 + 10 * randn(rng));
+    for (let i = 0; i < N; i++) wealths.push(pareto(rng, alpha, 5e4));
+    baseMeanH = heights.reduce((a, b) => a + b) / N;
+    baseMeanW = wealths.reduce((a, b) => a + b) / N;
+  }
+
+  function sampleMarkets() {
+    const rng = mulberry32(seedM);
+    gRet = new Float64Array(DAYS); eRet = new Float64Array(DAYS);
+    for (let i = 0; i < DAYS; i++) gRet[i] = 0.0004 + 0.01 * randn(rng);
+    for (let i = 0; i < DAYS; i++) eRet[i] = Math.max(-0.9, 0.0004 + (0.01 / Math.sqrt(3)) * t3(rng));
+  }
+
+  function equity(rets, drop) {
+    const out = new Float64Array(DAYS + 1); out[0] = 1;
+    for (let i = 0; i < DAYS; i++) out[i + 1] = out[i] * (1 + (drop && drop.has(i) ? 0 : rets[i]));
+    return out;
+  }
+  function topIdx(rets, worst) {
+    const idx = Array.from({ length: DAYS }, (_, i) => i);
+    idx.sort((a, b) => worst ? rets[a] - rets[b] : rets[b] - rets[a]);
+    return new Set(idx.slice(0, 10));
+  }
+
+  function updatePeopleStats() {
+    const sumH = heights.reduce((a, b) => a + b), sumW = wealths.reduce((a, b) => a + b);
+    const maxH = Math.max(...heights);
+    let maxW = 0; for (const v of wealths) if (v > maxW) maxW = v;
+    document.getElementById('s5-hshare').textContent = fmt(maxH / sumH * 100, 3) + '%';
+    document.getElementById('s5-wshare').textContent = fmt(maxW / sumW * 100, 1) + '%';
+    const mH = sumH / heights.length, mW = sumW / wealths.length;
+    const hEl = document.getElementById('s5-hmove'), wEl = document.getElementById('s5-wmove');
+    hEl.textContent = newTall ? '+' + fmt((mH / baseMeanH - 1) * 100, 3) + '%' : '–';
+    wEl.textContent = newRich ? (mW / baseMeanW >= 10 ? '×' + fmt(mW / baseMeanW, 0) : '+' + fmt((mW / baseMeanW - 1) * 100, 0) + '%') : '–';
+    if (newRich) {
+      let mw = 0; for (const v of wealths) if (v > mw) mw = v;
+      tick.innerHTML = 'One newcomer now owns <b>' + fmt(mw / sumW * 100, 1) + '%</b> of the country’s wealth. Everyone you previously sampled lives in the leftmost pixel.';
+    } else if (newTall) {
+      tick.innerHTML = 'The tallest human in recorded history just walked in — and the average height moved by a <b>rounding error</b>. That is Mediocristan’s whole personality.';
+    } else {
+      tick.innerHTML = 'Two countries, 2,000 residents each. Same sample size, different species of randomness. (Wealth: Pareto, α = ' + fmt(alpha, 2) + '.)';
+    }
+  }
+
+  function updateMarketStats() {
+    const gFull = equity(gRet)[DAYS], eFull = equity(eRet)[DAYS];
+    const drop = dayFilter === 0 ? null : (dayFilter === 1 ? [topIdx(gRet, false), topIdx(eRet, false)] : [topIdx(gRet, true), topIdx(eRet, true)]);
+    const gCut = drop ? equity(gRet, drop[0])[DAYS] : gFull;
+    const eCut = drop ? equity(eRet, drop[1])[DAYS] : eFull;
+    const xf = v => '×' + fmt(v, v < 10 ? 1 : 0);
+    document.getElementById('s5-g-full').textContent = xf(gFull);
+    document.getElementById('s5-e-full').textContent = xf(eFull);
+    document.getElementById('s5-g-cut').textContent = drop ? xf(gCut) : '–';
+    document.getElementById('s5-e-cut').textContent = drop ? xf(eCut) : '–';
+    let mx = 0; for (const r of eRet) if (Math.abs(r) > Math.abs(mx)) mx = r;
+    document.getElementById('s5-e-max').textContent = (mx >= 0 ? '+' : '') + fmt(mx * 100, 1) + '%';
+    if (dayFilter === 1) {
+      tick.innerHTML = 'Delete <b>10 days out of 12,600</b> — 0.08% of the time — and the fat-tailed market drops from ' + xf(eFull) + ' to <span class="r">' + xf(eCut) + '</span>. The Gaussian one loses a far smaller slice (' + xf(gFull) + ' → ' + xf(gCut) + '): its best days are merely good, never decisive.';
+    } else if (dayFilter === 2) {
+      tick.innerHTML = 'Now delete the <b>10 worst days</b>: the fat-tailed market jumps from ' + xf(eFull) + ' to <span class="g">' + xf(eCut) + '</span>. Half a century, decided either way by a week and a half.';
+    } else {
+      tick.innerHTML = 'Fifty years of daily returns, same mean and variance. One market is Gaussian; one has fat tails (Student-t, α ≈ 3). They look similar — until you ask <b>where the growth lives</b>.';
+    }
+    return { drop };
+  }
+
+  const cv = makeCanvas(canvas, w => mode === 0 ? Math.max(320, Math.min(430, w * 0.5)) : Math.max(280, Math.min(360, w * 0.42)), draw);
+
+  function hash01(i) { let x = (i * 2654435761) >>> 0; x ^= x >> 16; x = (x * 0x45d9f3b) >>> 0; x ^= x >> 16; return x / 4294967296; }
+
+  function drawPeople(ctx, w, h) {
+    if (!heights.length) return;
+    const padL = 16, padR = 16;
+    const bandH = (h - 40) / 2;
+    const bands = [
+      { label: 'MEDIOCRISTAN — HEIGHT', data: heights, min: 130, max: newTall ? 285 : 212, unit: v => fmt(v, 0) + ' cm', color: 'rgba(92,185,139,0.4)', y0: 14, newcomer: newTall ? 272 : null },
+      { label: 'EXTREMISTAN — NET WORTH', data: wealths, min: 0, max: 0, unit: v => fmtMoney(v), color: 'rgba(240,178,74,0.4)', y0: 26 + bandH, newcomer: null },
+    ];
+    let maxW = 0; for (const v of wealths) if (v > maxW) maxW = v;
+    bands[1].max = maxW * 1.04;
+    for (const b of bands) {
+      const cw = w - padL - padR;
+      const X = v => padL + Math.min(1, Math.max(0, (v - b.min) / (b.max - b.min))) * cw;
+      ctx.font = '10px ' + MONO; ctx.textAlign = 'left'; ctx.fillStyle = '#7E8598';
+      ctx.fillText(b.label, padL, b.y0);
+      // dots
+      const dotTop = b.y0 + 8, dotH = bandH - 52;
+      ctx.fillStyle = b.color;
+      for (let i = 0; i < b.data.length; i++) {
+        ctx.fillRect(X(b.data[i]), dotTop + hash01(i) * dotH, 2, 2);
+      }
+      // mean marker
+      const mean = b.data.reduce((a, c) => a + c) / b.data.length;
+      ctx.strokeStyle = '#E8EAF0'; ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.moveTo(X(mean), dotTop); ctx.lineTo(X(mean), dotTop + dotH + 6); ctx.stroke();
+      ctx.fillStyle = '#E8EAF0'; ctx.textAlign = 'center'; ctx.font = '9px ' + MONO;
+      ctx.fillText('MEAN ' + b.unit(mean), Math.max(padL + 40, Math.min(w - padR - 40, X(mean))), dotTop + dotH + 16);
+      // share bar: sorted top1 / next1% / rest
+      const sorted = [...b.data].sort((x, y) => y - x);
+      const total = sorted.reduce((a, c) => a + c, 0);
+      const one = sorted[0] / total, pct1 = sorted.slice(0, Math.ceil(sorted.length / 100)).reduce((a, c) => a + c, 0) / total;
+      const barY = dotTop + dotH + 22, barH = 10;
+      ctx.fillStyle = 'rgba(126,133,152,0.25)'; ctx.fillRect(padL, barY, cw, barH);
+      ctx.fillStyle = 'rgba(240,178,74,0.55)'; ctx.fillRect(padL, barY, cw * pct1, barH);
+      ctx.fillStyle = '#F0B24A'; ctx.fillRect(padL, barY, cw * one, barH);
+      ctx.fillStyle = '#7E8598'; ctx.textAlign = 'left'; ctx.font = '9px ' + MONO;
+      const who = b === bands[0] ? 'TALLEST PERSON' : 'RICHEST PERSON';
+      ctx.fillText(who + ' HOLDS ' + (one >= 0.001 ? fmt(one * 100, 1) : '<0.1') + '% OF THE TOTAL (BRIGHT BAR)', padL, barY + barH + 11);
+      // axis extremes
+      ctx.textAlign = 'right'; ctx.fillText(b.unit(b.max), w - padR, b.y0);
+      // newcomer highlight
+      if ((b === bands[0] && newTall) || (b === bands[1] && newRich)) {
+        const v = b === bands[0] ? 272 : maxW;
+        ctx.fillStyle = b === bands[0] ? '#5CB98B' : '#F0B24A';
+        ctx.beginPath(); ctx.arc(X(v), dotTop + dotH / 2, 4, 0, 7); ctx.fill();
+        ctx.textAlign = 'center'; ctx.fillStyle = '#E8EAF0';
+        ctx.fillText('THE NEWCOMER', Math.min(w - 60, Math.max(60, X(v))), dotTop + dotH / 2 - 10);
+      }
+    }
+  }
+
+  function drawMarkets(ctx, w, h) {
+    if (!gRet) return;
+    const padL = 46, padR = 16, padT = 18, padB = 28;
+    const cw = w - padL - padR, ch = h - padT - padB;
+    const { drop } = lastDrop;
+    const curves = [
+      { eq: equity(gRet, drop && drop[0]), full: equity(gRet), color: '#C6CBD8', label: 'GAUSSISTAN' },
+      { eq: equity(eRet, drop && drop[1]), full: equity(eRet), color: '#F0B24A', label: 'EXTREMISTAN' },
+    ];
+    let hi = 0;
+    for (const c of curves) for (let i = 0; i <= DAYS; i += 25) { const l = Math.log10(Math.max(c.full[i], c.eq[i])); if (l > hi) hi = l; }
+    hi = Math.max(hi * 1.05, 1); const lo = Math.log10(0.5);
+    const X = i => padL + i / DAYS * cw;
+    const Yv = v => padT + (1 - (Math.log10(Math.max(v, 0.5)) - lo) / (hi - lo)) * ch;
+    ctx.font = '10px ' + MONO; ctx.textAlign = 'right'; ctx.fillStyle = '#7E8598';
+    for (let e = 0; e <= Math.floor(hi); e++) {
+      const y = padT + (1 - (e - lo) / (hi - lo)) * ch;
+      ctx.strokeStyle = 'rgba(42,46,58,0.6)';
+      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w - padR, y); ctx.stroke();
+      ctx.fillText('×' + fmt(Math.pow(10, e)), padL - 5, y + 3);
+    }
+    ctx.textAlign = 'center';
+    [0, 10, 20, 30, 40, 50].forEach(yr => ctx.fillText(yr + 'y', X(yr / 50 * DAYS), h - 8));
+    for (const c of curves) {
+      if (drop) {
+        ctx.strokeStyle = c.color;
+        ctx.globalAlpha = 0.26;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        for (let px = 0; px <= cw; px += 2) {
+          const i = Math.round(px / cw * DAYS);
+          const y = Yv(c.full[i]);
+          if (px === 0) ctx.moveTo(padL, y); else ctx.lineTo(padL + px, y);
+        }
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+      ctx.strokeStyle = c.color; ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      for (let px = 0; px <= cw; px += 2) {
+        const i = Math.round(px / cw * DAYS);
+        const y = Yv(c.eq[i]);
+        if (px === 0) ctx.moveTo(padL, y); else ctx.lineTo(padL + px, y);
+      }
+      ctx.stroke();
+      ctx.fillStyle = c.color; ctx.textAlign = 'left'; ctx.font = '10px ' + MONO;
+      ctx.fillText(c.label + ' ' + '×' + fmt(c.eq[DAYS], c.eq[DAYS] < 10 ? 1 : 0), padL + 6, Yv(c.eq[DAYS]) - 6);
+    }
+    if (drop) {
+      ctx.fillStyle = '#E4523F';
+      for (const i of drop[1]) ctx.fillRect(X(i), padT + ch - 4, 2, 8);
+      ctx.textAlign = 'right'; ctx.fillText('DROPPED DAYS ▮', w - padR, padT + 10);
+    }
+  }
+
+  let lastDrop = { drop: null };
+  function draw(ctx, w, h) {
+    ctx.fillStyle = '#14161C'; ctx.fillRect(0, 0, w, h);
+    if (mode === 0) drawPeople(ctx, w, h); else drawMarkets(ctx, w, h);
+  }
+
+  function refresh() {
+    if (mode === 0) updatePeopleStats(); else lastDrop = updateMarketStats();
+    cv.redraw();
+  }
+
+  const modeSeg = document.getElementById('s5-mode');
+  Array.from(modeSeg.children).forEach((b, i) => b.addEventListener('click', () => {
+    mode = i;
+    Array.from(modeSeg.children).forEach((c, j) => { c.className = j === i ? 'on' : ''; c.setAttribute('aria-pressed', j === i ? 'true' : 'false'); });
+    document.getElementById('s5-ctl-people').style.display = i === 0 ? 'contents' : 'none';
+    document.getElementById('s5-ctl-markets').style.display = i === 1 ? 'contents' : 'none';
+    document.getElementById('s5-stats-people').hidden = i !== 0;
+    document.getElementById('s5-stats-markets').hidden = i !== 1;
+    if (i === 1 && !gRet) sampleMarkets();
+    refresh();
+    cv.resize();
+  }));
+  const daySeg = document.getElementById('s5-days');
+  Array.from(daySeg.children).forEach((b, i) => b.addEventListener('click', () => {
+    dayFilter = i;
+    Array.from(daySeg.children).forEach((c, j) => { c.className = j === i ? 'on' : ''; c.setAttribute('aria-pressed', j === i ? 'true' : 'false'); });
+    refresh();
+  }));
+  bindRange('s5-alpha', 's5-alpha-out', v => fmt(v, 2), v => { alpha = v; samplePeople(); refresh(); });
+  document.getElementById('s5-tall').addEventListener('click', () => { if (!newTall) { heights.push(272); newTall = true; refresh(); } });
+  document.getElementById('s5-bezos').addEventListener('click', () => { if (!newRich) { wealths.push(2e11); newRich = true; refresh(); } });
+  document.getElementById('s5-resample').addEventListener('click', () => { seedP++; samplePeople(); refresh(); });
+  document.getElementById('s5-reroll').addEventListener('click', () => { seedM++; sampleMarkets(); refresh(); });
+
+  samplePeople();
+  refresh();
+})();
+
+/* ================= SIM 06: the blowup artist ================= */
+(function sim06() {
+  const canvas = document.getElementById('c6');
+  const CRASH_P = 1 / 120, CRASH = -0.60, WORLDS = 1000, MONTHS = 120;
+  let phase = 0, choice = null, seed = 3000, showMgr = false, baseTicker = '';
+  let audA = [], audB = [], sharpeA = 0, sharpeB = 0;
+  let res = null;
+  const tick = document.getElementById('s6-ticker');
+  const btnA = document.getElementById('s6-a'), btnB = document.getElementById('s6-b');
+
+  function sharpe(rets) {
+    const m = rets.reduce((a, b) => a + b) / rets.length;
+    const sd = Math.sqrt(rets.reduce((a, b) => a + (b - m) * (b - m), 0) / (rets.length - 1));
+    return m / sd * Math.sqrt(12);
+  }
+
+  function audition() {
+    const rng = mulberry32(seed);
+    const ra = [], rb = [];
+    audA = [1]; audB = [1];
+    for (let t = 0; t < 60; t++) {
+      const a = 0.0059 + 0.02 * randn(rng);
+      const b = 0.011 + 0.005 * randn(rng); // the brochure: a window with no crash — the ones that crashed aren't being marketed
+      ra.push(a); rb.push(b);
+      audA.push(audA[t] * (1 + a));
+      audB.push(audB[t] * (1 + b));
+    }
+    sharpeA = sharpe(ra); sharpeB = sharpe(rb);
+    document.getElementById('s6-sharpe').textContent = 'A ' + fmt(sharpeA, 1) + ' · B ' + fmt(sharpeB, 1);
+  }
+
+  function runWorlds() {
+    const rng = mulberry32(seed + 7);
+    const aF = new Float64Array(WORLDS), bF = new Float64Array(WORLDS), mF = new Float64Array(WORLDS);
+    let bUnder = 0, bCrashed = 0, mgrPosDespiteCrash = 0, crashedWorlds = 0;
+    for (let wi = 0; wi < WORLDS; wi++) {
+      let a = 1, b = 1, mgr = 0, bYearStart = 1, hadCrash = false;
+      for (let t = 1; t <= MONTHS; t++) {
+        a *= 1 + 0.0059 + 0.02 * randn(rng);
+        if (rng() < CRASH_P) { b *= 1 + CRASH; hadCrash = true; }
+        else b *= 1 + 0.011 + 0.005 * randn(rng);
+        if (t % 12 === 0) {
+          mgr += 0.02 * b + 0.2 * Math.max(0, b - bYearStart);
+          bYearStart = b;
+        }
+      }
+      aF[wi] = a; bF[wi] = b; mF[wi] = mgr;
+      if (b < 1) bUnder++;
+      if (hadCrash) { crashedWorlds++; if (mgr > 0.1) mgrPosDespiteCrash++; }
+    }
+    const med = arr => { const s = Array.from(arr).sort((x, y) => x - y); return s[Math.floor(arr.length / 2)]; };
+    res = {
+      aF, bF, mF,
+      aMed: med(aF), bMed: med(bF), mMed: med(mF),
+      bUnder: bUnder / WORLDS, crashed: crashedWorlds / WORLDS,
+      mgrOK: crashedWorlds ? mgrPosDespiteCrash / crashedWorlds : 0,
+    };
+  }
+
+  function commit(c) {
+    choice = c; phase = 1;
+    btnA.disabled = true; btnB.disabled = true;
+    document.getElementById('s6-reset').hidden = false;
+    document.getElementById('s6-mgr-wrap').hidden = false;
+    runWorlds();
+    const yours = choice === 'A' ? res.aF[0] : res.bF[0];
+    const yEl = document.getElementById('s6-you');
+    yEl.textContent = '×' + fmt(yours, 2) + ' (this world)';
+    yEl.className = 'v ' + (yours >= 1 ? 'green' : 'red');
+    const xf = v => '×' + fmt(v, 2);
+    tick.innerHTML = (choice === 'B'
+      ? 'You chose the smooth one. '
+      : 'You resisted a Sharpe of ' + fmt(sharpeB, 1) + ' — rare. ')
+      + 'Across 1,000 futures: A’s median ' + xf(res.aMed) + ', B’s median <span class="r">' + xf(res.bMed) + '</span>; B finishes underwater in <b>' + fmt(res.bUnder * 100, 0) + '%</b> of them. The audition contained no information about any of this.';
+    baseTicker = tick.innerHTML;
+    const hadFocus = document.activeElement === btnA || document.activeElement === btnB;
+    if (hadFocus) document.getElementById('s6-reset').focus({ preventScroll: true });
+    cv.resize();
+    cv.redraw();
+  }
+
+  const cv = makeCanvas(canvas, w => phase === 0 ? (w < 580 ? 330 : 230) : 300, draw);
+
+  function miniChart(ctx, eq, x0, y0, cw, ch, color, name, sh) {
+    let lo = Infinity, hi = -Infinity;
+    for (const v of eq) { if (v < lo) lo = v; if (v > hi) hi = v; }
+    const pad = (hi - lo) * 0.1 || 0.1; lo -= pad; hi += pad;
+    ctx.strokeStyle = 'rgba(42,46,58,0.8)';
+    ctx.strokeRect(x0 + 0.5, y0 + 0.5, cw, ch);
+    ctx.strokeStyle = color; ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    for (let i = 0; i < eq.length; i++) {
+      const x = x0 + i / (eq.length - 1) * cw, y = y0 + (1 - (eq[i] - lo) / (hi - lo)) * ch;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.font = '11px ' + MONO; ctx.textAlign = 'left'; ctx.fillStyle = color;
+    ctx.fillText(name, x0 + 8, y0 + 16);
+    ctx.textAlign = 'right'; ctx.fillStyle = '#C6CBD8';
+    ctx.fillText('SHARPE ' + fmt(sh, 1) + ' · ×' + fmt(eq[eq.length - 1], 2), x0 + cw - 8, y0 + 16);
+  }
+
+  function draw(ctx, w, h) {
+    ctx.fillStyle = '#14161C'; ctx.fillRect(0, 0, w, h);
+    if (phase === 0) {
+      if (audA.length < 2) return;
+      if (w < 580) {
+        miniChart(ctx, audA, 14, 10, w - 28, 140, '#C6CBD8', 'FUND A', sharpeA);
+        miniChart(ctx, audB, 14, 168, w - 28, 140, '#F0B24A', 'FUND B', sharpeB);
+      } else {
+        const cw = (w - 42) / 2;
+        miniChart(ctx, audA, 14, 14, cw, h - 46, '#C6CBD8', 'FUND A', sharpeA);
+        miniChart(ctx, audB, 28 + cw, 14, cw, h - 46, '#F0B24A', 'FUND B', sharpeB);
+      }
+      ctx.fillStyle = '#7E8598'; ctx.font = '10px ' + MONO; ctx.textAlign = 'left';
+      ctx.fillText('5-YEAR AUDITED TRACK RECORDS, MONTHLY', 14, h - 8);
+      return;
+    }
+    // phase 1: histogram of 10-yr multiples (log2 bins)
+    const padL = 40, padR = 16, padT = 34, padB = 44;
+    const cw = w - padL - padR, ch = h - padT - padB;
+    const bins = [0, 0.25, 0.5, 1, 2, 4, 8, 1e9];
+    const labels = ['<×0.25', '×0.25–0.5', '×0.5–1', '×1–2', '×2–4', '×4–8', '>×8'];
+    const count = arr => {
+      const c = new Array(7).fill(0);
+      for (const v of arr) for (let i = 0; i < 7; i++) if (v >= bins[i] && v < bins[i + 1]) { c[i]++; break; }
+      return c;
+    };
+    const cA = count(res.aF), cB = count(res.bF);
+    const maxC = Math.max(...cA, ...cB);
+    const bw = cw / 7;
+    for (let i = 0; i < 7; i++) {
+      const x = padL + i * bw;
+      const hA = cA[i] / maxC * ch, hB = cB[i] / maxC * ch;
+      ctx.fillStyle = 'rgba(198,203,216,0.35)';
+      ctx.fillRect(x + bw * 0.12, padT + ch - hA, bw * 0.34, hA);
+      ctx.fillStyle = i < 3 ? 'rgba(228,82,63,0.75)' : 'rgba(240,178,74,0.75)';
+      ctx.fillRect(x + bw * 0.52, padT + ch - hB, bw * 0.34, hB);
+      ctx.fillStyle = '#7E8598'; ctx.font = '9px ' + MONO; ctx.textAlign = 'center';
+      if (bw >= 54 || i % 2 === 0) ctx.fillText(labels[i], x + bw / 2, h - padB + 14);
+    }
+    ctx.strokeStyle = 'rgba(42,46,58,0.9)';
+    ctx.beginPath(); ctx.moveTo(padL, padT + ch + 0.5); ctx.lineTo(w - padR, padT + ch + 0.5); ctx.stroke();
+    ctx.font = '10px ' + MONO; ctx.textAlign = 'left';
+    ctx.fillStyle = 'rgba(198,203,216,0.9)'; ctx.fillText('■ FUND A', padL, padT - 18);
+    ctx.fillStyle = '#F0B24A'; ctx.fillText('■ FUND B', padL + 80, padT - 18);
+    ctx.fillStyle = '#7E8598';
+    ctx.fillText('1,000 ALTERNATIVE 10-YEAR FUTURES · CLIENT WEALTH MULTIPLE', padL, padT - 4);
+    ctx.textAlign = 'center'; ctx.fillStyle = '#E8EAF0';
+    ctx.fillText('MEDIANS — A: ×' + fmt(res.aMed, 2) + '  B: ×' + fmt(res.bMed, 2), padL + cw / 2, h - padB + 30);
+  }
+
+  btnA.addEventListener('click', () => commit('A'));
+  btnB.addEventListener('click', () => commit('B'));
+  document.getElementById('s6-mgr').addEventListener('change', e => {
+    showMgr = e.target.checked;
+    if (!res) return;
+    tick.innerHTML = baseTicker + (showMgr
+      ? ' <span class="g">B’s manager, meanwhile: median 10-year take ' + fmtMoney(res.mMed * 1e6) + ' per $1M managed — and he keeps a substantial positive take in ' + fmt(res.mgrOK * 100, 0) + '% of the very futures where his clients crashed.</span>'
+      : '');
+  });
+  document.getElementById('s6-reset').addEventListener('click', () => {
+    phase = 0; choice = null; seed++; showMgr = false;
+    document.getElementById('s6-mgr').checked = false;
+    document.getElementById('s6-mgr-wrap').hidden = true;
+    document.getElementById('s6-reset').hidden = true;
+    btnA.disabled = false; btnB.disabled = false;
+    document.getElementById('s6-you').textContent = '–';
+    document.getElementById('s6-you').className = 'v';
+    tick.textContent = 'The brochures are printed. Choose a fund.';
+    baseTicker = '';
+    audition();
+    cv.resize();
+    cv.redraw();
+  });
+  audition();
+  cv.redraw();
+})();
+</script>
+<script>
+'use strict';
+/* ================= SIM 07: the shake table ================= */
+(function sim07() {
+  const canvas = document.getElementById('c7');
+  const BREAK = 7.5, CAP = 12;
+  let seed = 1200, vol = 1.5, sched = 0;
+  let zBase = [], series = null, revealT = 1e9, animRaf = null;
+
+  function rollBase() {
+    const rng = mulberry32(seed);
+    zBase = [];
+    for (let i = 0; i < 400; i++) zBase.push(randn(rng));
+  }
+
+  function compute() {
+    const n = sched === 0 ? 400 : 25;
+    const mult = sched === 0 ? 1 : 4;
+    const shocks = [];
+    for (let i = 0; i < n; i++) shocks.push(zBase[i] * vol * mult);
+    const cup = [0], anvil = [0], hydra = [0];
+    let broke = 0;
+    for (let i = 0; i < n; i++) {
+      const x = shocks[i];
+      let dc;
+      if (broke) dc = 0;
+      else if (Math.abs(x) > BREAK) { dc = -80; broke = i + 1; }
+      else dc = -x * x / 6;
+      cup.push(cup[i] + dc);
+      anvil.push(anvil[i] + 0.8 * x);
+      hydra.push(hydra[i] + Math.min(x * x / 6, CAP));
+    }
+    series = { cup, anvil, hydra, shocks, broke, n };
+    updateStats();
+  }
+
+  function updateStats() {
+    const { cup, anvil, hydra, broke, n } = series;
+    const cEl = document.getElementById('s7-cup');
+    if (broke) { cEl.textContent = 'SHATTERED · shock ' + broke; cEl.className = 'v red'; }
+    else { cEl.textContent = fmt(cup[n], 0); cEl.className = 'v ' + (cup[n] < -1 ? 'red' : ''); }
+    const aEl = document.getElementById('s7-anvil');
+    aEl.textContent = (anvil[n] >= 0 ? '+' : '') + fmt(anvil[n], 0);
+    aEl.className = 'v';
+    const hEl = document.getElementById('s7-hydra');
+    hEl.textContent = '+' + fmt(hydra[n], 0);
+    hEl.className = 'v green';
+    document.getElementById('s7-ticker').innerHTML = (sched === 0
+      ? '<b>400 small shocks.</b> Total turbulence (variance × count) identical to the storm schedule.'
+      : '<b>25 shocks, 4× the size</b> — the same total turbulence, redistributed into the tail.')
+      + (broke
+        ? (sched === 1
+          ? ' A storm exceeded the teacup’s threshold — <span class="r">shattered</span>.'
+          : ' Even the drizzle found a shock past the teacup’s threshold — <span class="r">shattered</span>. At this volatility no schedule is safe for the fragile.')
+        : ' Nothing exceeded the teacup’s threshold — this time.');
+  }
+
+  const cv = makeCanvas(canvas, w => w >= 640 ? 330 : 280, draw);
+  function draw(ctx, w, h) {
+    ctx.fillStyle = '#14161C'; ctx.fillRect(0, 0, w, h);
+    if (!series) return;
+    const wide = w >= 640;
+    drawMain(ctx, wide ? w * 0.60 : w, h);
+    if (wide) drawCurves(ctx, w * 0.60 + 10, 6, w - w * 0.60 - 24, h - 12);
+  }
+
+  function drawMain(ctx, mw, h) {
+    const { cup, anvil, hydra, broke, n } = series;
+    const padL = 42, padR = 12, padT = 34, padB = 28;
+    const cw = mw - padL - padR, ch = h - padT - padB;
+    let lo = -20, hi = 20;
+    for (let i = 0; i <= n; i++) {
+      lo = Math.min(lo, cup[i], anvil[i], hydra[i]);
+      hi = Math.max(hi, cup[i], anvil[i], hydra[i]);
+    }
+    const pad = (hi - lo) * 0.08; lo -= pad; hi += pad;
+    const X = i => padL + i / n * cw;
+    const Yv = v => padT + (1 - (v - lo) / (hi - lo)) * ch;
+    ctx.setLineDash([4, 4]); ctx.strokeStyle = 'rgba(126,133,152,0.4)';
+    ctx.beginPath(); ctx.moveTo(padL, Yv(0)); ctx.lineTo(padL + cw, Yv(0)); ctx.stroke(); ctx.setLineDash([]);
+    ctx.font = '10px ' + MONO; ctx.textAlign = 'right'; ctx.fillStyle = '#7E8598';
+    ctx.fillText('0', padL - 5, Yv(0) + 3);
+    ctx.fillText(fmt(hi, 0), padL - 5, padT + 8);
+    ctx.fillText(fmt(lo, 0), padL - 5, padT + ch);
+    ctx.textAlign = 'center';
+    ctx.fillText('shocks →', padL + cw / 2, h - 8);
+    const upto = Math.min(revealT, n);
+    const lines = [
+      { d: cup, c: '#E4523F', name: 'TEACUP' },
+      { d: anvil, c: '#C6CBD8', name: 'ANVIL' },
+      { d: hydra, c: '#5CB98B', name: 'HYDRA' },
+    ];
+    let lx = padL;
+    ctx.textAlign = 'left'; ctx.font = '10px ' + MONO;
+    for (const L of lines) {
+      ctx.fillStyle = L.c;
+      ctx.fillText('■ ' + L.name, lx, padT - 18);
+      lx += ctx.measureText('■ ' + L.name).width + 16;
+      ctx.strokeStyle = L.c; ctx.lineWidth = 1.7;
+      ctx.beginPath();
+      for (let i = 0; i <= upto; i++) {
+        if (i === 0) ctx.moveTo(X(i), Yv(L.d[i])); else ctx.lineTo(X(i), Yv(L.d[i]));
+      }
+      ctx.stroke();
+    }
+    ctx.fillStyle = '#7E8598';
+    ctx.fillText('CUMULATIVE WELL-BEING, IDENTICAL SHOCKS', padL, padT - 5);
+    if (broke && upto >= broke) {
+      ctx.fillStyle = '#E4523F'; ctx.font = '15px Georgia,serif'; ctx.textAlign = 'center';
+      ctx.fillText('†', X(broke), Yv(cup[broke]) - 8);
+    }
+  }
+
+  function drawCurves(ctx, x0, y0, cw, chAll) {
+    const { shocks } = series;
+    const defs = [
+      { f: x => -x * x / 6, c: '#E4523F', name: 'CONCAVE — HARM ACCELERATES', lo: -18, hi: 2, breakZone: true },
+      { f: x => 0.8 * x, c: '#C6CBD8', name: 'LINEAR — SHOCKS PASS THROUGH', lo: -9, hi: 9 },
+      { f: x => Math.min(x * x / 6, CAP), c: '#5CB98B', name: 'CONVEX — GAIN ACCELERATES, CAPPED', lo: -2, hi: 14 },
+    ];
+    const hh = chAll / 3;
+    defs.forEach((D, di) => {
+      const yTop = y0 + di * hh + 14, yH = hh - 24;
+      const X = x => x0 + (x + 10) / 20 * cw;
+      const Yv = v => yTop + (1 - (v - D.lo) / (D.hi - D.lo)) * yH;
+      ctx.font = '8.5px ' + MONO; ctx.textAlign = 'left'; ctx.fillStyle = D.c;
+      ctx.fillText(D.name, x0, yTop - 4);
+      if (D.breakZone) {
+        ctx.fillStyle = 'rgba(201,58,43,0.14)';
+        ctx.fillRect(x0, yTop, (10 - BREAK) / 20 * cw, yH);
+        ctx.fillRect(X(BREAK), yTop, (10 - BREAK) / 20 * cw, yH);
+      }
+      ctx.strokeStyle = 'rgba(42,46,58,0.8)';
+      ctx.beginPath(); ctx.moveTo(x0, Yv(0)); ctx.lineTo(x0 + cw, Yv(0)); ctx.stroke();
+      ctx.strokeStyle = D.c; ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      for (let px = 0; px <= cw; px += 2) {
+        const x = px / cw * 20 - 10;
+        const y = Yv(D.f(x));
+        if (px === 0) ctx.moveTo(x0, y); else ctx.lineTo(x0 + px, y);
+      }
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(232,234,240,0.8)';
+      const step = Math.max(1, Math.floor(shocks.length / 50));
+      for (let i = 0; i < shocks.length; i += step) {
+        const sx = Math.max(-10, Math.min(10, shocks[i]));
+        ctx.fillRect(X(sx) - 1, Yv(D.f(sx)) - 1, 2, 2);
+      }
+    });
+  }
+
+  function animate() {
+    if (animRaf) cancelAnimationFrame(animRaf);
+    if (REDUCED) { revealT = 1e9; cv.redraw(); return; }
+    revealT = 0;
+    const stepBy = Math.max(1, Math.round(series.n / 45));
+    (function step() {
+      revealT += stepBy;
+      cv.redraw();
+      if (revealT < series.n) animRaf = requestAnimationFrame(step);
+    })();
+  }
+
+  bindRange('s7-vol', 's7-vol-out', v => fmt(v, 2), v => { vol = v; compute(); revealT = 1e9; cv.redraw(); });
+  const schedSeg = document.getElementById('s7-sched');
+  Array.from(schedSeg.children).forEach((b, i) => b.addEventListener('click', () => {
+    sched = i;
+    Array.from(schedSeg.children).forEach((c, j) => { c.className = j === i ? 'on' : ''; c.setAttribute('aria-pressed', j === i ? 'true' : 'false'); });
+    compute(); animate();
+  }));
+  document.getElementById('s7-run').addEventListener('click', () => { seed++; rollBase(); compute(); animate(); });
+
+  rollBase();
+  compute();
+  cv.redraw();
+  let started = false;
+  whenVisible(canvas, () => { if (!started) { started = true; animate(); } });
+})();
+
+/* ================= SIM 08: build your barbell ================= */
+(function sim08() {
+  const canvas = document.getElementById('c8');
+  const NW = 300, T = 20;
+  let seed = 5000, mid = 100, wild = 0, pc = 5;
+  let u = null, z1 = null, z2 = null, cur = null;
+  const tick = document.getElementById('s8-ticker');
+  const xf = v => '×' + fmt(v, v < 10 ? 2 : 0);
+
+  function rollWorld() {
+    const rng = mulberry32(seed);
+    u = new Float64Array(NW * T); z1 = new Float64Array(NW * T); z2 = new Float64Array(NW * T);
+    for (let i = 0; i < NW * T; i++) { u[i] = rng(); z1[i] = randn(rng); z2[i] = randn(rng); }
+  }
+
+  function simulate(s, m, wl, keepPaths) {
+    const finals = new Float64Array(NW);
+    const paths = keepPaths ? [] : null;
+    const p = pc / 100;
+    for (let wi = 0; wi < NW; wi++) {
+      let v = 1;
+      const path = keepPaths ? [1] : null;
+      for (let t = 0; t < T; t++) {
+        const i = wi * T + t;
+        const crash = u[i] < p;
+        const rm = crash ? -0.45 + 0.08 * z1[i] : 0.07 + 0.04 * z1[i];
+        const rw = crash ? 10 : Math.min(-0.1, -0.35 + 0.08 * z2[i]);
+        const r = s * 0.015 + m * rm + wl * rw;
+        v = Math.max(v * (1 + r), 1e-4);
+        if (path) path.push(v);
+      }
+      finals[wi] = v;
+      if (paths) paths.push(path);
+    }
+    const sorted = Array.from(finals).sort((a, b) => a - b);
+    return {
+      paths,
+      med: sorted[Math.floor(NW / 2)],
+      p5: sorted[Math.floor(NW * 0.05)],
+      pHalf: sorted.filter(x => x < 0.5).length / NW,
+    };
+  }
+
+  function update() {
+    const s = 100 - mid - wild;
+    cur = simulate(s / 100, mid / 100, wild / 100, true);
+    const bMid = simulate(0, 1, 0, false);
+    const bBar = simulate(0.9, 0, 0.1, false);
+    document.getElementById('s8-alloc').textContent = s + ' / ' + mid + ' / ' + wild;
+    document.getElementById('s8-med').textContent = xf(cur.med);
+    const p5El = document.getElementById('s8-p5');
+    p5El.textContent = xf(cur.p5);
+    p5El.className = 'v ' + (cur.p5 < 0.5 ? 'red' : cur.p5 < 0.9 ? '' : 'green');
+    const ruEl = document.getElementById('s8-ruin');
+    ruEl.textContent = fmt(cur.pHalf * 100, 1) + '%';
+    ruEl.className = 'v ' + (cur.pHalf > 0.15 ? 'red' : cur.pHalf > 0.02 ? '' : 'green');
+    document.getElementById('s8-bmid').textContent = xf(bMid.med);
+    document.getElementById('s8-bbar').textContent = xf(bBar.med);
+    if (pc === 0) {
+      tick.innerHTML = '<b>No crashes, ever.</b> The middle compounds serenely and the barbell bleeds its option premium (' + xf(bBar.med) + ' vs ' + xf(bMid.med) + ' median) — its wild sleeve loses ~35% a year buying protection nothing ever justifies. This is the honest price of insurance, visible here, buried in footnotes elsewhere.';
+    } else if (bBar.med >= bMid.med) {
+      tick.innerHTML = 'At <b>' + pc + '% crash odds</b>, the middle’s compounding breaks and the barbell wins outright (median ' + xf(bBar.med) + ' vs ' + xf(bMid.med) + ') — its floor holds while the option leg feeds on the very storms that kill the middle. Same storms for every allocation; only the shape changes.';
+    } else {
+      tick.innerHTML = 'At <b>' + pc + '% crash odds</b>, the middle still outruns the barbell on the median (' + xf(bMid.med) + ' vs ' + xf(bBar.med) + ') — now compare worst-case rows, and remember: in the real world, this slider’s true position is unknowable.';
+    }
+    cv.redraw();
+  }
+
+  const cv = makeCanvas(canvas, w => Math.max(280, Math.min(360, w * 0.42)), draw);
+  function draw(ctx, w, h) {
+    ctx.fillStyle = '#14161C'; ctx.fillRect(0, 0, w, h);
+    if (!cur) return;
+    const padL = 50, padR = 16, padT = 20, padB = 28;
+    const cw = w - padL - padR, ch = h - padT - padB;
+    let hi = 1, lo = -1;
+    for (const p of cur.paths) {
+      const e = Math.log10(Math.max(p[T], 1e-3));
+      if (e > hi) hi = e;
+    }
+    hi = Math.min(hi + 0.3, 4); lo = -2.1;
+    const X = t => padL + t / T * cw;
+    const Yv = v => padT + (1 - (Math.max(Math.log10(Math.max(v, 1e-9)), lo) - lo) / (hi - lo)) * Math.min(ch, ch);
+    ctx.font = '10px ' + MONO; ctx.textAlign = 'right'; ctx.fillStyle = '#7E8598';
+    for (let e = -2; e <= Math.floor(hi); e++) {
+      const y = padT + (1 - (e - lo) / (hi - lo)) * ch;
+      ctx.strokeStyle = 'rgba(42,46,58,0.6)';
+      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w - padR, y); ctx.stroke();
+      ctx.fillText('×' + (e >= 0 ? fmt(Math.pow(10, e)) : Math.pow(10, e).toFixed(e === -1 ? 1 : 2)), padL - 5, y + 3);
+    }
+    ctx.textAlign = 'center';
+    [0, 5, 10, 15, 20].forEach(t => ctx.fillText(t + 'y', X(t), h - 8));
+    // ghosts
+    ctx.strokeStyle = 'rgba(126,133,152,0.09)'; ctx.lineWidth = 1;
+    for (const p of cur.paths) {
+      ctx.beginPath();
+      for (let t = 0; t <= T; t++) {
+        if (t === 0) ctx.moveTo(X(t), Yv(p[t])); else ctx.lineTo(X(t), Yv(p[t]));
+      }
+      ctx.stroke();
+    }
+    // per-time median
+    const tmp = new Float64Array(NW);
+    ctx.strokeStyle = '#F0B24A'; ctx.lineWidth = 2.2;
+    ctx.beginPath();
+    for (let t = 0; t <= T; t++) {
+      for (let i = 0; i < NW; i++) tmp[i] = cur.paths[i][t];
+      tmp.sort();
+      const y = Yv((tmp[NW / 2 - 1] + tmp[NW / 2]) / 2);
+      if (t === 0) ctx.moveTo(X(t), y); else ctx.lineTo(X(t), y);
+    }
+    ctx.stroke();
+    // start line
+    ctx.setLineDash([2, 3]); ctx.strokeStyle = 'rgba(201,58,43,0.5)';
+    ctx.beginPath(); ctx.moveTo(padL, Yv(1)); ctx.lineTo(w - padR, Yv(1)); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = '#F0B24A'; ctx.textAlign = 'left'; ctx.font = '10px ' + MONO;
+    ctx.fillText('MEDIAN OF 300 FUTURES', padL + 6, padT + 12);
+  }
+
+  const midInp = document.getElementById('s8-mid'), wildInp = document.getElementById('s8-wild');
+  function setAlloc(m, w) {
+    mid = m; wild = w;
+    midInp.value = m; wildInp.value = w;
+    midInp.setAttribute('aria-valuetext', m + '% middle');
+    wildInp.setAttribute('aria-valuetext', w + '% wild');
+    document.getElementById('s8-mid-out').textContent = m;
+    document.getElementById('s8-wild-out').textContent = w;
+    update();
+  }
+  midInp.addEventListener('input', () => { const m = Number(midInp.value); setAlloc(m, m + wild > 100 ? 100 - m : wild); });
+  wildInp.addEventListener('input', () => { const w = Number(wildInp.value); setAlloc(w + mid > 100 ? 100 - w : mid, w); });
+  document.getElementById('s8-preset-mid').addEventListener('click', () => setAlloc(100, 0));
+  document.getElementById('s8-preset-bar').addEventListener('click', () => setAlloc(0, 10));
+  document.getElementById('s8-preset-wild').addEventListener('click', () => setAlloc(0, 100));
+  bindRange('s8-p', 's8-p-out', v => v + '%', v => { pc = v; update(); });
+  document.getElementById('s8-storms').addEventListener('click', () => { seed++; rollWorld(); update(); });
+
+  rollWorld();
+  update();
+})();
+
+/* ================= POSTSCRIPT: lindy ================= */
+(function simLindy() {
+  const canvas = document.getElementById('cx4');
+  let age = 25;
+  const remH = a => Math.max(2, 82 - 0.9 * a);
+  const remB = a => a;
+
+  function updateStats() {
+    const hEl = document.getElementById('sx4-h'), bEl = document.getElementById('sx4-b');
+    hEl.textContent = fmt(remH(age), 0) + ' yrs';
+    bEl.textContent = '≈' + fmt(remB(age), 0) + ' yrs';
+    hEl.parentElement.querySelector('.k').textContent = 'A ' + age + '-year-old human: expected remaining';
+    bEl.parentElement.querySelector('.k').textContent = 'A ' + age + '-year-old book: expected remaining';
+    document.getElementById('sx4-ticker').innerHTML = age >= 80
+      ? 'The human is gone or close to it; the book is just getting started. (Mortality slope vs. power-law survival, α = 2.)'
+      : 'Every year survived is <span class="r">bad news for the human</span> and <span class="g">good news for the book</span>. (Mortality slope vs. power-law survival, α = 2.)';
+  }
+
+  const cv = makeCanvas(canvas, w => 190, draw);
+  function draw(ctx, w, h) {
+    ctx.fillStyle = '#14161C'; ctx.fillRect(0, 0, w, h);
+    const padL = 40, padR = 14, padT = 16, padB = 26;
+    const cw = w - padL - padR, ch = h - padT - padB;
+    const X = a => padL + a / 100 * cw;
+    const Yv = v => padT + (1 - v / 100) * ch;
+    ctx.font = '9px ' + MONO; ctx.textAlign = 'right'; ctx.fillStyle = '#7E8598';
+    [0, 50, 100].forEach(v => {
+      ctx.strokeStyle = 'rgba(42,46,58,0.6)';
+      ctx.beginPath(); ctx.moveTo(padL, Yv(v)); ctx.lineTo(w - padR, Yv(v)); ctx.stroke();
+      ctx.fillText(v + 'y', padL - 4, Yv(v) + 3);
+    });
+    ctx.textAlign = 'center';
+    ctx.fillText('age (years survived) →', padL + cw / 2, h - 7);
+    ctx.strokeStyle = '#C6CBD8'; ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    for (let a = 0; a <= 100; a += 2) {
+      if (a === 0) ctx.moveTo(X(a), Yv(remH(a))); else ctx.lineTo(X(a), Yv(remH(a)));
+    }
+    ctx.stroke();
+    ctx.strokeStyle = '#F0B24A';
+    ctx.beginPath(); ctx.moveTo(X(0), Yv(0)); ctx.lineTo(X(100), Yv(100)); ctx.stroke();
+    ctx.fillStyle = '#C6CBD8'; ctx.textAlign = 'left'; ctx.font = '9px ' + MONO;
+    ctx.fillText('PERISHABLE (HUMAN)', X(6), Yv(remH(6)) - 8);
+    ctx.fillStyle = '#F0B24A';
+    ctx.fillText('LINDY (BOOK, IDEA)', X(58), Yv(58) + 16);
+    for (const [f, c] of [[remH, '#C6CBD8'], [remB, '#F0B24A']]) {
+      ctx.fillStyle = c;
+      ctx.beginPath(); ctx.arc(X(age), Yv(f(age)), 3.5, 0, 7); ctx.fill();
+    }
+  }
+
+  bindRange('sx4-age', 'sx4-age-out', v => v + ' yrs', v => { age = v; updateStats(); cv.redraw(); });
+  updateStats();
+})();
+</script>
+</body>
+</html>
