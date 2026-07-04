@@ -879,7 +879,7 @@ function whenVisible(el, onVisible, onHidden) {
     }
     let lo = Infinity, hi = -Infinity;
     for (const p of paths) for (let t = 0; t <= STEPS; t++) { if (p[t] < lo) lo = p[t]; if (p[t] > hi) hi = p[t]; }
-    const padT = 24;
+    const padT = 44; // clear of the status line, glow included
     const X = t => (t / STEPS) * w;
     const usable = h * 0.54 - padT; // the whole fan — losers included — lives above the text scrim
     const Y = v => padT + (1 - (v - lo) / (hi - lo)) * usable;
