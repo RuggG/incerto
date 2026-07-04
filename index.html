@@ -837,13 +837,13 @@ function whenVisible(el, onVisible, onHidden) {
   const canvas = document.getElementById('hero-canvas');
   const luckyEl = document.getElementById('hero-lucky');
   const N = 400, YEARS = 12, STEPS = YEARS * 12; // monthly coin flips
-  let paths = [], best = 0, worst = 0, seed = 20260703;
+  let paths = [], best = 0, seed = 20260703;
 
   function build() {
     const rng = mulberry32(seed);
     paths = [];
-    best = 0; worst = 0;
-    let bestEnd = -Infinity, worstEnd = Infinity;
+    best = 0;
+    let bestEnd = -Infinity;
     for (let i = 0; i < N; i++) {
       const p = new Float32Array(STEPS + 1);
       let v = 0;
@@ -854,7 +854,6 @@ function whenVisible(el, onVisible, onHidden) {
       }
       paths.push(p);
       if (v > bestEnd) { bestEnd = v; best = i; }
-      if (v < worstEnd) { worstEnd = v; worst = i; }
     }
     const winPct = Math.round(50 + bestEnd / (STEPS * 1.4) * 50);
     luckyEl.textContent = 'the "genius": +' + fmt(bestEnd * 0.9, 0) + '% over ' + YEARS + ' yrs';
@@ -886,7 +885,7 @@ function whenVisible(el, onVisible, onHidden) {
     const upto = Math.max(2, Math.floor(progress * STEPS));
 
     for (let i = 0; i < paths.length; i++) {
-      if (i === best || i === worst) continue;
+      if (i === best) continue;
       ctx.beginPath();
       // a featured subsample stays legible as individual careers — including the losing ones
       ctx.strokeStyle = i % 16 === 0 ? 'rgba(158,166,186,0.42)' : 'rgba(126,133,152,0.13)';
@@ -895,20 +894,6 @@ function whenVisible(el, onVisible, onHidden) {
       ctx.moveTo(X(0), Y(p[0]));
       for (let t = 1; t <= upto; t++) ctx.lineTo(X(t), Y(p[t]));
       ctx.stroke();
-    }
-    // the anti-genius: same coins, no book deal
-    const pw = paths[worst];
-    ctx.beginPath();
-    ctx.strokeStyle = 'rgba(158,166,186,0.5)';
-    ctx.lineWidth = 1.2;
-    ctx.moveTo(X(0), Y(pw[0]));
-    for (let t = 1; t <= upto; t++) ctx.lineTo(X(t), Y(pw[t]));
-    ctx.stroke();
-    if (upto > STEPS * 0.55) {
-      ctx.fillStyle = 'rgba(158,166,186,0.85)';
-      ctx.font = "10px ui-monospace,'SF Mono',Menlo,Consolas,monospace";
-      ctx.textAlign = 'right';
-      ctx.fillText('same coins · no book deal', X(upto) - 8, Math.min(Y(pw[upto]) + 16, padT + usable + 16));
     }
     // the lucky one
     const p = paths[best];
